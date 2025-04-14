@@ -1,0 +1,46 @@
+.profile-container {
+  padding: 20px;
+}
+
+.profile-header {
+  margin-bottom: 20px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.not-found {
+  text-align: center;
+  padding: 40px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.profile-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-row {
+  margin-bottom: 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-actions {
+  margin-top: 30px;
+}
+
+.spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+

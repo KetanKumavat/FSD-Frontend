@@ -1,0 +1,46 @@
+.qr-code-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.qr-code {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.qr-instructions {
+  margin-top: 10px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.refresh-button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.refresh-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.loading {
+  padding: 20px;
+  color: #6c757d;
+}
+
+.error {
+  padding: 10px;
+  color: #dc3545;
+}

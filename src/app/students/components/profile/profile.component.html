@@ -1,0 +1,94 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>My Profile</h1>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && !currentUser" class="not-found">
+    <p>Unable to load user profile. Please try logging in again.</p>
+  </div>
+
+  <div *ngIf="!loading && currentUser" class="profile-content">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Account Information</mat-card-title>
+        <mat-card-subtitle>Update your personal details</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Username</mat-label>
+              <input matInput [value]="currentUser?.username" disabled />
+              <mat-hint>Username cannot be changed</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Role</mat-label>
+              <input matInput [value]="currentUser?.role" disabled />
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Full Name</mat-label>
+              <input
+                matInput
+                formControlName="name"
+                placeholder="Enter your full name"
+              />
+              <mat-error
+                *ngIf="profileForm.controls['name'].hasError('required')"
+              >
+                Name is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email</mat-label>
+              <input
+                matInput
+                formControlName="email"
+                placeholder="Enter your email"
+              />
+              <mat-error
+                *ngIf="profileForm.controls['email'].hasError('required')"
+              >
+                Email is required
+              </mat-error>
+              <mat-error
+                *ngIf="profileForm.controls['email'].hasError('email')"
+              >
+                Please enter a valid email address
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="profileForm.invalid || saving"
+            >
+              <mat-spinner
+                diameter="20"
+                *ngIf="saving"
+                class="spinner"
+              ></mat-spinner>
+              <span *ngIf="!saving">Save Changes</span>
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

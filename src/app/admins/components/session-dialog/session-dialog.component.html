@@ -1,0 +1,99 @@
+<h2 mat-dialog-title>
+  {{ isEditMode ? "Edit" : "Create" }} Orientation Session
+</h2>
+<form [formGroup]="sessionForm" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" placeholder="Session Title" />
+      <mat-error *ngIf="sessionForm.get('title')?.hasError('required')"
+        >Title is required</mat-error
+      >
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Faculty Name</mat-label>
+      <input
+        matInput
+        formControlName="facultyName"
+        placeholder="Name of faculty"
+      />
+      <mat-error *ngIf="sessionForm.get('facultyName')?.hasError('required')"
+        >Faculty name is required</mat-error
+      >
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="sessionForm.get('date')?.hasError('required')"
+          >Date is required</mat-error
+        >
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Time</mat-label>
+        <input
+          matInput
+          formControlName="time"
+          placeholder="HH:MM"
+          pattern="[0-9]{1,2}:[0-9]{2}"
+        />
+        <mat-hint>Use 24-hour format (e.g., 14:30)</mat-hint>
+        <mat-error *ngIf="sessionForm.get('time')?.hasError('required')"
+          >Time is required</mat-error
+        >
+        <mat-error *ngIf="sessionForm.get('time')?.hasError('pattern')"
+          >Use format HH:MM (e.g. 14:30)</mat-error
+        >
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Location</mat-label>
+      <input
+        matInput
+        formControlName="location"
+        placeholder="Room or building"
+      />
+      <mat-error *ngIf="sessionForm.get('location')?.hasError('required')"
+        >Location is required</mat-error
+      >
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Capacity</mat-label>
+      <input
+        matInput
+        type="number"
+        formControlName="capacity"
+        min="1"
+        max="500"
+      />
+      <mat-error *ngIf="sessionForm.get('capacity')?.hasError('required')"
+        >Capacity is required</mat-error
+      >
+      <mat-error *ngIf="sessionForm.get('capacity')?.hasError('min')"
+        >Minimum capacity is 1</mat-error
+      >
+      <mat-error *ngIf="sessionForm.get('capacity')?.hasError('max')"
+        >Maximum capacity is 500</mat-error
+      >
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="onCancel()">Cancel</button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="sessionForm.invalid"
+    >
+      {{ isEditMode ? "Update" : "Create" }}
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,30 @@
+<div class="qr-code-container">
+  <h3>Session Check-In QR Code</h3>
+
+  <div *ngIf="isLoading" class="loading">Loading QR code...</div>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="qrData && !isLoading" class="qr-code">
+    <qrcode
+      [qrdata]="qrData"
+      [width]="250"
+      [errorCorrectionLevel]="'M'"
+      [elementType]="'svg'"
+    >
+    </qrcode>
+    <p class="qr-instructions">
+      Students can scan this code to check in to the session
+    </p>
+  </div>
+
+  <button
+    class="refresh-button"
+    (click)="generateQrCode()"
+    [disabled]="isLoading"
+  >
+    Refresh QR Code
+  </button>
+</div>

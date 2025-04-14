@@ -1,0 +1,128 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+    <p *ngIf="currentUser">Welcome, {{ currentUser?.name }}</p>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading" class="dashboard-content">
+    <div class="stats-cards">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-value">{{ stats?.totalSessions }}</div>
+          <div class="stat-label">Total Sessions</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-value">{{ stats?.upcomingSessions }}</div>
+          <div class="stat-label">Upcoming Sessions</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-value">{{ stats?.fullSessions }}</div>
+          <div class="stat-label">Full Sessions</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-value">
+            {{ stats?.totalRegistered }} / {{ stats.totalCapacity }}
+          </div>
+          <div class="stat-label">Total Registrations</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="recent-sessions">
+      <h2>Recent Sessions</h2>
+      <table
+        mat-table
+        [dataSource]="sessions.slice(0, 5)"
+        class="mat-elevation-z2"
+      >
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Title</th>
+          <td mat-cell *matCellDef="let session">{{ session?.title }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let session">
+            {{ session?.date | date : "mediumDate" }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="time">
+          <th mat-header-cell *matHeaderCellDef>Time</th>
+          <td mat-cell *matCellDef="let session">
+            {{ session?.startTime }} - {{ session?.endTime }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="location">
+          <th mat-header-cell *matHeaderCellDef>Location</th>
+          <td mat-cell *matCellDef="let session">{{ session?.location }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="capacity">
+          <th mat-header-cell *matHeaderCellDef>Capacity</th>
+          <td mat-cell *matCellDef="let session">
+            {{ session?.registeredCount }} / {{ session?.capacity }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let session">
+            <button
+              mat-icon-button
+              [routerLink]="['/admin/sessions', session.id]"
+            >
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="[
+            'title',
+            'date',
+            'time',
+            'location',
+            'capacity',
+            'actions'
+          ]"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="
+            let row;
+            columns: [
+              'title',
+              'date',
+              'time',
+              'location',
+              'capacity',
+              'actions'
+            ]
+          "
+        ></tr>
+      </table>
+
+      <div class="view-all-button">
+        <button mat-raised-button color="primary" routerLink="/admin/sessions">
+          View All Sessions
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

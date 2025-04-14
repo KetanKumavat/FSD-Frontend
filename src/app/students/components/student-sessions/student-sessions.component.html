@@ -1,0 +1,92 @@
+<div class="sessions-container">
+  <div class="sessions-header">
+    <h1>Available Orientation Sessions</h1>
+  </div>
+
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Search Sessions</mat-label>
+    <input
+      matInput
+      [(ngModel)]="searchText"
+      (keyup)="applyFilter()"
+      placeholder="Search by title, location..."
+    />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading" class="sessions-content">
+    <div *ngIf="availableSessions.length === 0" class="no-sessions">
+      <p>No available orientation sessions at this time.</p>
+    </div>
+
+    <div class="sessions-grid">
+      <mat-card
+        *ngFor="
+          let session of availableSessions | filter : searchText : 'title'
+        "
+        class="session-card"
+      >
+        <mat-card-header>
+          <mat-card-title>{{ session.title }}</mat-card-title>
+          <mat-card-subtitle>{{
+            session.date | date : "fullDate"
+          }}</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <p class="session-description">{{ session.description }}</p>
+
+          <div class="session-details">
+            <p>
+              <mat-icon>access_time</mat-icon> {{ session.startTime }} -
+              {{ session.endTime }}
+            </p>
+            <p><mat-icon>location_on</mat-icon> {{ session.location }}</p>
+            <p>
+              <mat-icon>people</mat-icon>
+              <span
+                [class.full-session]="
+                  session.registeredCount >= session.capacity
+                "
+              >
+                {{ session.registeredCount }} /
+                {{ session.capacity }} registered
+              </span>
+            </p>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions align="end">
+          <button mat-button [routerLink]="['/student/sessions', session.id]">
+            DETAILS
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="registerForSession(session)"
+            [disabled]="
+              isRegistered(session.id) ||
+              session.registeredCount >= session.capacity
+            "
+          >
+            {{ isRegistered(session.id) ? "REGISTERED" : "REGISTER" }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <div class="my-sessions-button">
+      <button
+        mat-raised-button
+        color="accent"
+        routerLink="/student/my-sessions"
+      >
+        View My Registered Sessions
+      </button>
+    </div>
+  </div>
+</div>

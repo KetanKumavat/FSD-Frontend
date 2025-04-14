@@ -1,0 +1,82 @@
+<div class="scanner-container">
+  <h3>Session Check-In Scanner</h3>
+
+  <div *ngIf="scannerEnabled" class="scanner-active">
+    <p>Please scan a session QR code</p>
+
+    <zxing-scanner
+      #scanner
+      [formats]="formatsEnabled"
+      [enable]="scannerEnabled"
+      (scanSuccess)="onScanSuccess($event)"
+      (camerasFound)="onDevicesFound($event)"
+      [device]="currentDevice"
+    >
+    </zxing-scanner>
+
+    <div *ngIf="availableDevices.length === 0" class="no-devices">
+      No camera devices found
+    </div>
+
+    <div *ngIf="availableDevices.length > 1" class="device-select">
+      <label>Select Camera:</label>
+      <select [(ngModel)]="currentDevice">
+        <option *ngFor="let device of availableDevices" [ngValue]="device">
+          {{ device.label }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="!scannerEnabled" class="check-in-form">
+    <div *ngIf="!scanError && !scanSuccess" class="email-input">
+      <h4>QR Code Scanned Successfully</h4>
+      <p>Please enter the student's email to complete check-in:</p>
+
+      <div class="form-group">
+        <label for="student-email">Student Email:</label>
+        <input
+          type="email"
+          id="student-email"
+          [(ngModel)]="studentEmail"
+          placeholder="student@example.com"
+          [disabled]="isProcessing"
+          class="form-control"
+        />
+      </div>
+
+      <div class="button-group">
+        <button
+          (click)="onSubmitEmail()"
+          [disabled]="isProcessing || !studentEmail"
+          class="check-in-btn"
+        >
+          Check In
+        </button>
+        <button
+          (click)="restartScan()"
+          [disabled]="isProcessing"
+          class="cancel-btn"
+        >
+          Cancel
+        </button>
+      </div>
+
+      <div *ngIf="isProcessing" class="processing">Processing check-in...</div>
+    </div>
+
+    <div *ngIf="scanError" class="error-message">
+      <h4>Error</h4>
+      <p>{{ errorMessage }}</p>
+      <button (click)="restartScan()" class="retry-btn">Try Again</button>
+    </div>
+
+    <div *ngIf="scanSuccess" class="success-message">
+      <h4>Success!</h4>
+      <p>Student has been checked in successfully</p>
+      <button (click)="restartScan()" class="new-scan-btn">
+        Scan Another Code
+      </button>
+    </div>
+  </div>
+</div>

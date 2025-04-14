@@ -1,0 +1,27 @@
+<nav class="navbar bg-dark">
+  <h1>
+    <a routerLink="/"><i class="fas fa-university"></i> Orientation Portal</a>
+  </h1>
+  <ul>
+    <!-- Show these links only when NOT logged in -->
+    <ng-container *ngIf="!isLoggedIn">
+      <li><a routerLink="/auth/register">Register</a></li>
+      <li><a routerLink="/auth/login">Login</a></li>
+    </ng-container>
+
+    <!-- Show these links only when logged in -->
+    <ng-container *ngIf="isLoggedIn">
+      <!-- Optional: Show dashboard link based on role -->
+      <li *ngIf="userRole === 'ADMIN'">
+        <a routerLink="/admins/dashboard">Dashboard</a>
+      </li>
+      <li *ngIf="userRole === 'STUDENT'">
+        <a routerLink="/students/dashboard">Dashboard</a>
+      </li>
+      <!-- Logout button -->
+      <li>
+        <a href="#" (click)="logout($event)">Logout</a>
+      </li>
+    </ng-container>
+  </ul>
+</nav>

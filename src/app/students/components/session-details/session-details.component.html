@@ -1,0 +1,132 @@
+<div class="details-container">
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && !session" class="not-found">
+    <h2>Session Not Found</h2>
+    <p>The session you're looking for doesn't exist or has been removed.</p>
+    <button mat-raised-button color="primary" (click)="goBack()">Go Back</button>
+  </div>
+
+  <div *ngIf="!loading && session" class="session-details">
+    <div class="details-header">
+      <button mat-icon-button (click)="goBack()" aria-label="Go back">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>{{session.title}}</h1>
+    </div>
+
+    <mat-card>
+      <mat-card-content>
+        <div class="session-info">
+          <div class="info-section">
+            <h2>Session Information</h2>
+            <p class="description">{{session.description}}</p>
+            
+            <div class="info-grid">
+              <div class="info-item">
+                <mat-icon>event</mat-icon>
+                <div>
+                  <span class="label">Date</span>
+                  <span class="value">{{session.date | date:'fullDate'}}</span>
+                </div>
+              </div>
+              
+              <div class="info-item">
+                <mat-icon>access_time</mat-icon>
+                <div>
+                  <span class="label">Time</span>
+                  <span class="value">{{session.startTime}} - {{session.endTime}}</span>
+                </div>
+              </div>
+              
+              <div class="info-item">
+                <mat-icon>location_on</mat-icon>
+                <div>
+                  <span class="label">Location</span>
+                  <span class="value">{{session.location}}</span>
+                </div>
+              </div>
+              
+              <div class="info-item">
+                <mat-icon>people</mat-icon>
+                <div>
+                  <span class="label">Capacity</span>
+                  <span class="value" [class.full-session]="session.registeredCount >= session.capacity">
+                    {{session.registeredCount}} / {{session.capacity}} registered
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Student Registration Section -->
+          <div class="registration-section" *ngIf="isStudent">
+            <h2>Registration</h2>
+            <div class="registration-status">
+              <p *ngIf="isRegistered" class="registered-status">
+                <mat-icon>check_circle</mat-icon> You are registered for this session
+              </p>
+              <p *ngIf="!isRegistered && session.registeredCount < session.capacity" class="not-registered-status">
+                <mat-icon>info</mat-icon> You are not registered for this session
+              </p>
+              <p *ngIf="!isRegistered && session.registeredCount >= session.capacity" class="full-status">
+                <mat-icon>error</mat-icon> This session is full
+              </p>
+            </div>
+            
+            <div class="registration-actions">
+              <button 
+                mat-raised-button 
+                color="primary" 
+                *ngIf="!isRegistered"
+                [disabled]="session.registeredCount >= session.capacity"
+                (click)="registerForSession()">
+                Register for Session
+              </button>
+              
+              <button 
+                mat-raised-button 
+                color="warn" 
+                *ngIf="isRegistered"
+                (click)="unregisterFromSession()">
+                Unregister from Session
+              </button>
+            </div>
+          </div>
+
+          <!-- Admin Attendees Section -->
+          <div class="attendees-section" *ngIf="isAdmin">
+            <h2>Registered Attendees ({{attendees.length}})</h2>
+            
+            <div *ngIf="attendees.length === 0" class="no-attendees">
+              <p>No students have registered for this session yet.</p>
+            </div>
+            
+            <table mat-table [dataSource]="attendees" class="mat-elevation-z2" *ngIf="attendees.length > 0">
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let attendee">{{attendee.userName}}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef>Email</th>
+                <td mat-cell *matCellDef="let attendee">{{attendee.userEmail}}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="registrationDate">
+                <th mat-header-cell *matHeaderCellDef>Registration Date</th>
+                <td mat-cell *matCellDef="let attendee">{{attendee.registrationDate | date:'medium'}}</td>
+              </ng-container>
+              
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+

@@ -1,0 +1,41 @@
+.sessions-container {
+  padding: 20px;
+}
+
+.sessions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filter-field {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.sessions-table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.mat-column-actions {
+  width: 120px;
+  text-align: center;
+}
+
+.full-session {
+  color: #f44336;
+  font-weight: bold;
+}
+

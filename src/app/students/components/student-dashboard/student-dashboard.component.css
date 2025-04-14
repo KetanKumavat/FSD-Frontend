@@ -1,0 +1,37 @@
+.dashboard-container {
+  padding: 20px;
+}
+
+.dashboard-header {
+  margin-bottom: 20px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.no-sessions {
+  text-align: center;
+  padding: 40px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.no-sessions p {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+table {
+  width: 100%;
+}
+
+.browse-button {
+  margin-top: 20px;
+  text-align: right;
+}
+

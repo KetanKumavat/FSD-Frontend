@@ -1,0 +1,18 @@
+.full-width {
+  width: 100%;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.form-row > * {
+  flex: 1;
+  min-width: 150px;
+}
+
+mat-form-field {
+  margin-bottom: 16px;
+}
