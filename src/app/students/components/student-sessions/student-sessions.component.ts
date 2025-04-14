@@ -119,13 +119,7 @@ export class StudentSessionsComponent implements OnInit {
     });
   }
 
-  // Rest of your methods remain the same...
-  isRegistered(sessionId: number): boolean {
-    return this.myOrientations.some(
-      (session) => session.orientationID === sessionId
-    );
-  }
-
+  // Modify the registerForSession method to accept orientationID directly
   registerForSession(sessionId: number): void {
     if (this.currentStudent) {
       this.orientationService
@@ -134,6 +128,8 @@ export class StudentSessionsComponent implements OnInit {
           next: () => {
             alert('Successfully registered for session');
             this.loadMyOrientations();
+            // Reload the sessions to update the attendees count
+            this.loadSessions();
           },
           error: (err) => {
             console.error('Failed to register for session', err);
@@ -141,6 +137,13 @@ export class StudentSessionsComponent implements OnInit {
           },
         });
     }
+  }
+
+  // Simplify the isRegistered check for the current data structure
+  isRegistered(sessionId: number): boolean {
+    return this.myOrientations.some(
+      (session) => session.orientationID === sessionId
+    );
   }
 
   cancelRegistration(sessionId: number): void {

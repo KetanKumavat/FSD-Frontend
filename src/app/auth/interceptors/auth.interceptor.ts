@@ -18,6 +18,14 @@ export class AuthInterceptor implements HttpInterceptor {
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
+    if (
+      request.url.includes('/auth/') ||
+      request.url.includes('/public/') ||
+      (request.url.includes('/orientations/departments') &&
+        request.method === 'GET')
+    ) {
+      return next.handle(request);
+    }
     const token = localStorage.getItem('auth_token');
 
     if (token) {

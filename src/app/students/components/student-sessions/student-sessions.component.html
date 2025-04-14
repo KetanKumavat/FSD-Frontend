@@ -9,7 +9,7 @@
       matInput
       [(ngModel)]="searchText"
       (keyup)="applyFilter()"
-      placeholder="Search by title, location..."
+      placeholder="Search by faculty name..."
     />
     <mat-icon matSuffix>search</mat-icon>
   </mat-form-field>
@@ -26,54 +26,37 @@
     <div class="sessions-grid">
       <mat-card
         *ngFor="
-          let session of availableSessions | filter : searchText : 'title'
+          let session of availableSessions | filter : searchText : 'facultyName'
         "
         class="session-card"
       >
         <mat-card-header>
-          <mat-card-title>{{ session.title }}</mat-card-title>
-          <mat-card-subtitle>{{
-            session.date | date : "fullDate"
-          }}</mat-card-subtitle>
+          <mat-card-title>Session #{{ session.orientationID }}</mat-card-title>
+          <mat-card-subtitle
+            >Faculty: {{ session.facultyName }}</mat-card-subtitle
+          >
         </mat-card-header>
 
         <mat-card-content>
-          <p class="session-description">{{ session.description }}</p>
-
           <div class="session-details">
-            <p>
-              <mat-icon>access_time</mat-icon> {{ session.startTime }} -
-              {{ session.endTime }}
-            </p>
-            <p><mat-icon>location_on</mat-icon> {{ session.location }}</p>
+            <p><mat-icon>access_time</mat-icon> {{ session.time }}</p>
             <p>
               <mat-icon>people</mat-icon>
-              <span
-                [class.full-session]="
-                  session.registeredCount >= session.capacity
-                "
-              >
-                {{ session.registeredCount }} /
-                {{ session.capacity }} registered
-              </span>
+              <span> {{ session.attendees.length }} registered </span>
             </p>
           </div>
         </mat-card-content>
 
         <mat-card-actions align="end">
-          <button mat-button [routerLink]="['/student/sessions', session.id]">
-            DETAILS
-          </button>
           <button
             mat-raised-button
             color="primary"
-            (click)="registerForSession(session)"
-            [disabled]="
-              isRegistered(session.id) ||
-              session.registeredCount >= session.capacity
-            "
+            (click)="registerForSession(session.orientationID)"
+            [disabled]="isRegistered(session.orientationID)"
           >
-            {{ isRegistered(session.id) ? "REGISTERED" : "REGISTER" }}
+            {{
+              isRegistered(session.orientationID) ? "REGISTERED" : "REGISTER"
+            }}
           </button>
         </mat-card-actions>
       </mat-card>

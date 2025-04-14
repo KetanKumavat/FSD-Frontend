@@ -77,3 +77,68 @@ mat-card-actions {
   text-align: center;
 }
 
+.sessions-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.sessions-header {
+  margin-bottom: 24px;
+}
+
+.filter-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.sessions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.session-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.session-details {
+  flex: 1;
+}
+
+.session-details p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+mat-card-content {
+  flex-grow: 1;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.no-sessions {
+  text-align: center;
+  padding: 32px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  margin: 48px 0;
+}
+
+.my-sessions-button {
+  text-align: center;
+  margin-top: 16px;
+}

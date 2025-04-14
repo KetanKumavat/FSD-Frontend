@@ -52,14 +52,18 @@ export class RegisterComponent implements OnInit {
   }
 
   updateFormFields(role: string): void {
-    // Remove all role-specific fields first
-    const controlsToRemove = [
-      'firstName',
-      'lastName',
-      'phoneNumber',
-      'fullName',
-      'designation',
-    ];
+    let controlsToRemove;
+    if (role.toLowerCase() === 'student') {
+      controlsToRemove = ['fullName', 'designation'];
+    } else {
+      // admin role
+      controlsToRemove = [
+        'firstName',
+        'lastName',
+        'phoneNumber',
+        'departmentId', // Remove departmentId for admin role
+      ];
+    }
 
     controlsToRemove.forEach((control) => {
       if (this.registrationForm.contains(control)) {

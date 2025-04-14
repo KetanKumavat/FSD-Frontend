@@ -5,6 +5,8 @@ import {
   Orientation,
   OrientationSession,
 } from '../../core/models/orientation.model';
+import { AuthService } from '../../auth/services/auth.service';
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -12,21 +14,34 @@ import {
 export class OrientationService {
   private apiUrl = 'http://localhost:8080/orientations';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
+
+  private getAuthHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${this.authService.getToken()}`,
+    });
+  }
 
   // Department methods
+  // Department methods
   getAllDepartments(): Observable<Orientation[]> {
-    return this.http.get<Orientation[]>(`${this.apiUrl}/departments`);
+    return this.http.get<Orientation[]>(`${this.apiUrl}/departments`, {
+      headers: this.getAuthHeaders(),
+    });
   }
 
   getDepartmentById(id: number): Observable<Orientation> {
-    return this.http.get<Orientation>(`${this.apiUrl}/departments/${id}`);
+    return this.http.get<Orientation>(`${this.apiUrl}/departments/${id}`, {
+      headers: this.getAuthHeaders(),
+    });
   }
 
   createDepartment(department: Partial<Orientation>): Observable<Orientation> {
     return this.http.post<Orientation>(
       `${this.apiUrl}/departments`,
-      department
+      department,
+      { headers: this.getAuthHeaders() }
     );
   }
 
@@ -36,35 +51,58 @@ export class OrientationService {
   ): Observable<Orientation> {
     return this.http.put<Orientation>(
       `${this.apiUrl}/departments/${id}`,
-      department
+      department,
+      { headers: this.getAuthHeaders() }
     );
   }
 
   deleteDepartment(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/departments/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/departments/${id}`, {
+      headers: this.getAuthHeaders(),
+    });
   }
-
+  // Session methods
   // Session methods
   getAllSessions(): Observable<OrientationSession[]> {
-    return this.http.get<OrientationSession[]>(`${this.apiUrl}/sessions`);
-  }
-
-  getSessionById(id: number): Observable<OrientationSession> {
-    return this.http.get<OrientationSession>(`${this.apiUrl}/sessions/${id}`);
+    return this.http.get<OrientationSession[]>(`${this.apiUrl}/sessions`, {
+      headers: this.getAuthHeaders(),
+    });
   }
 
   getSessionsByDepartment(
     departmentId: number
   ): Observable<OrientationSession[]> {
     return this.http.get<OrientationSession[]>(
-      `${this.apiUrl}/departments/${departmentId}/sessions`
+      `${this.apiUrl}/departments/${departmentId}/sessions`,
+      { headers: this.getAuthHeaders() }
     );
   }
 
-  updateSession(id: number, session: any): Observable<OrientationSession> {
+  updateSession(
+    id: number,
+    sessionData: Partial<OrientationSession>
+  ): Observable<OrientationSession> {
     return this.http.put<OrientationSession>(
       `${this.apiUrl}/sessions/${id}`,
-      session
+      sessionData,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  // Fixed createSession method
+  createSession(departmentId: number, sessionData: any): Observable<any> {
+    const payload = {
+      departmentID: departmentId,
+      time: sessionData.time,
+      facultyName: sessionData.facultyName,
+      capacity: sessionData.capacity,
+      title: sessionData.title,
+      location: sessionData.location,
+    };
+    return this.http.post<any>(
+      `${this.apiUrl}/departments/${departmentId}/sessions`,
+      payload,
+      { headers: this.getAuthHeaders() }
     );
   }
 
@@ -96,21 +134,6 @@ export class OrientationService {
   getDepartmentSessions(departmentId: number): Observable<any[]> {
     return this.http.get<any[]>(
       `${this.apiUrl}/departments/${departmentId}/sessions`
-    );
-  }
-
-  createSession(departmentId: number, sessionData: any): Observable<any> {
-    const payload = {
-      departmentID: departmentId,
-      time: sessionData.time, // Make sure this is just HH:MM:SS
-      facultyName: sessionData.facultyName,
-      capacity: sessionData.capacity,
-      title: sessionData.title,
-      location: sessionData.location,
-    };
-    return this.http.post<any>(
-      `${this.apiUrl}/departments/${departmentId}/sessions`,
-      payload
     );
   }
 
