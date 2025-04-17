@@ -1,14 +1,11 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Poppins", sans-serif;
-  background: linear-gradient(135deg, #fff5e0, #ffe0c1);
+/* Add this new container style */
+.login-page-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fff5e0, #ffe0c1);
+  font-family: "Poppins", sans-serif;
 }
 
 .glass-container {

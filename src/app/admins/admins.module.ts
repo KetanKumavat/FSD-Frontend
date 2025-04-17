@@ -29,13 +29,10 @@ import { AdminLayoutComponent } from './components/admin-layout/admin-layout.com
 import { SessionDialogComponent } from './components/session-dialog/session-dialog.component';
 import { DepartmentDialogComponent } from './components/department-dialog/department-dialog.component';
 import { QrCodeGeneratorComponent } from './components/qr-code-generator/qr-code-generator.component';
+import { ReportsComponent } from './reports/reports.component';
 
 @NgModule({
-  declarations: [
-    AdminDashboardComponent,
-    AdminSessionsComponent,
-    SessionDetailsComponent,
-  ],
+  declarations: [AdminDashboardComponent, AdminSessionsComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -63,6 +60,8 @@ import { QrCodeGeneratorComponent } from './components/qr-code-generator/qr-code
     DepartmentDialogComponent,
     QrCodeGeneratorComponent,
     DepartmentsComponent,
+    SessionDetailsComponent,
+    ReportsComponent,
   ],
 })
 export class AdminsModule {}

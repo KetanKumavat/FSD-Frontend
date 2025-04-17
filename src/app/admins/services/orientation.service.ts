@@ -7,6 +7,7 @@ import {
 } from '../../core/models/orientation.model';
 import { AuthService } from '../../auth/services/auth.service';
 import { HttpHeaders } from '@angular/common/http';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -26,9 +27,7 @@ export class OrientationService {
   // Department methods
   // Department methods
   getAllDepartments(): Observable<Orientation[]> {
-    return this.http.get<Orientation[]>(`${this.apiUrl}/departments`, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http.get<Orientation[]>(`${this.apiUrl}/departments`);
   }
 
   getDepartmentById(id: number): Observable<Orientation> {
@@ -63,10 +62,18 @@ export class OrientationService {
   }
   // Session methods
   // Session methods
-  getAllSessions(): Observable<OrientationSession[]> {
-    return this.http.get<OrientationSession[]>(`${this.apiUrl}/sessions`, {
-      headers: this.getAuthHeaders(),
-    });
+  getAllSessions(): Observable<any[]> {
+    return this.http
+      .get<any[]>(`${this.apiUrl}/sessions`, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(
+        map((response) => this.normalizeSessionsResponse(response)),
+        catchError((error) => {
+          console.error('Error loading sessions:', error);
+          return of([]);
+        })
+      );
   }
 
   getSessionsByDepartment(
@@ -151,17 +158,94 @@ export class OrientationService {
     );
   }
 
-  // Shared methods
-  getSessionAttendees(sessionId: number): Observable<any[]> {
-    return this.http.get<any[]>(
-      `${this.apiUrl}/sessions/${sessionId}/attendees`
-    );
+  private normalizeSessionsResponse(response: any[]): any[] {
+    if (!Array.isArray(response)) {
+      return [];
+    }
+
+    return response
+      .filter((item) => typeof item === 'object' && item !== null)
+      .map((session) => this.normalizeSessionData(session));
   }
 
-  // Export functionality
+  // Helper method to normalize individual session data
+  private normalizeSessionData(session: any): any {
+    if (!session || typeof session !== 'object') {
+      return null;
+    }
+
+    // Convert time string to a full date (today + time)
+    const timeString = session.time || '00:00:00';
+    const today = new Date();
+    const [hours, minutes] = timeString.split(':').map(Number);
+    today.setHours(hours, minutes, 0);
+
+    // Create a properly structured session object
+    return {
+      id: session.orientationID,
+      title: `Orientation Session ${session.orientationID}`,
+      department: session.department
+        ? {
+            id: session.department.departmentID,
+            name: session.department.departmentName,
+          }
+        : null,
+      startTime: today.toISOString(),
+      location: session.location || session.department?.location || 'TBD',
+      capacity: 30, // Default capacity
+      description: `Faculty: ${session.facultyName || 'TBD'}`,
+      active: true,
+      registeredCount: Array.isArray(session.attendees)
+        ? session.attendees.length
+        : 0,
+      date: today,
+      faculty: session.facultyName,
+      // Format for table display
+      time: timeString,
+      endTime: this.calculateEndTime(timeString),
+    };
+  }
+
+  private calculateEndTime(startTime: string): string {
+    if (!startTime) return '00:00:00';
+
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours, minutes, 0);
+    date.setTime(date.getTime() + 90 * 60 * 1000); // Add 90 minutes
+
+    return `${date.getHours().toString().padStart(2, '0')}:${date
+      .getMinutes()
+      .toString()
+      .padStart(2, '0')}:00`;
+  }
+
+  // Shared methods
+  getSessionAttendees(sessionId: number): Observable<any[]> {
+    return this.http
+      .get<any>(`${this.apiUrl}/sessions/${sessionId}`, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(
+        map((session) => {
+          if (!session || !Array.isArray(session.attendees)) {
+            return [];
+          }
+          return session.attendees.map((attendee: any) => ({
+            id: attendee.studentID,
+            name: `${attendee.firstName} ${attendee.lastName}`,
+            email: attendee.user?.email || 'N/A',
+            checkInTime: attendee.checkInTime || new Date().toISOString(),
+          }));
+        }),
+        catchError(() => of([]))
+      );
+  }
+
   exportAttendees(sessionId: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/sessions/${sessionId}/export`, {
       responseType: 'blob',
+      headers: this.getAuthHeaders(),
     });
   }
 
@@ -183,18 +267,53 @@ export class OrientationService {
   }
 
   getDashboardStats(): Observable<any> {
-    // This could be a real endpoint or a mock
-    return of({
-      departments: 5,
-      totalSessions: 12,
-      upcomingSessions: 8,
-      fullSessions: 3,
-      registrations: 156,
-      totalCapacity: 240,
-    });
+    return this.http
+      .get<any>(`${this.apiUrl}/stats`, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(
+        catchError((error) => {
+          console.error('Error fetching dashboard stats:', error);
+          // Fallback to mock data if API call fails
+          return of({
+            totalSessions: 12,
+            upcomingSessions: 8,
+            fullSessions: 3,
+            totalRegistered: 156,
+            totalCapacity: 240,
+            departments: 5,
+          });
+        })
+      );
   }
 
   getRecentSessions(): Observable<any[]> {
-    return this.getAllSessions();
+    return this.getAllSessions().pipe(map((sessions) => sessions.slice(0, 5)));
+  }
+
+  getSessionById(id: number): Observable<any> {
+    return this.http
+      .get<any>(`${this.apiUrl}/sessions/${id}`, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(
+        map((session) => this.normalizeSessionData(session)),
+        catchError((error) => {
+          console.error(`Error loading session ${id}:`, error);
+          return of(null);
+        })
+      );
+  }
+
+  // Remove or keep getMockDashboardStats as a fallback
+  getMockDashboardStats(): Observable<any> {
+    return of({
+      totalSessions: 12,
+      upcomingSessions: 8,
+      fullSessions: 3,
+      totalRegistered: 156,
+      totalCapacity: 240,
+      departments: 5,
+    });
   }
 }

@@ -1,60 +1,55 @@
-<div class="glass-container">
-  <p class="heading">Welcome Back</p>
+<div class="login-page-container">
+  <div class="glass-container">
+    <p class="heading">Welcome Back</p>
 
-  <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <input
-      type="email"
-      class="input-field"
-      placeholder="Email Address"
-      formControlName="email"
-    />
-    <div
-      *ngIf="
-        loginForm.controls['email'].invalid &&
-        loginForm.controls['email'].touched
-      "
-    >
-      <small>Valid email is required</small>
-    </div>
+    <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <input
+        type="email"
+        class="input-field"
+        placeholder="Email Address"
+        formControlName="email"
+      />
+      <div
+        *ngIf="
+          loginForm.controls['email'].invalid &&
+          loginForm.controls['email'].touched
+        "
+      >
+        <small>Valid email is required</small>
+      </div>
 
-    <input
-      [type]="hidePassword ? 'password' : 'text'"
-      class="input-field"
-      placeholder="Password"
-      formControlName="password"
-    />
-    <div
-      *ngIf="
-        loginForm.controls['password'].invalid &&
-        loginForm.controls['password'].touched
-      "
-    >
-      <small>Password is required</small>
-    </div>
+      <input
+        [type]="hidePassword ? 'password' : 'text'"
+        class="input-field"
+        placeholder="Password"
+        formControlName="password"
+      />
+      <div
+        *ngIf="
+          loginForm.controls['password'].invalid &&
+          loginForm.controls['password'].touched
+        "
+      >
+        <small>Password is required</small>
+      </div>
 
-    <div *ngIf="errorMessage" class="error-msg">
-      {{ errorMessage }}
-    </div>
+      <div *ngIf="errorMessage" class="error-msg">
+        {{ errorMessage }}
+      </div>
 
-    <button
-      class="primary-btn"
-      type="submit"
-      [disabled]="loginForm.invalid || loading"
-    >
-      <span *ngIf="loading" class="spinner"></span>
-      Login
-    </button>
-  </form>
+      <button
+        class="primary-btn"
+        type="submit"
+        [disabled]="loginForm.invalid || loading"
+      >
+        <span *ngIf="loading" class="spinner"></span>
+        Login
+      </button>
+    </form>
 
-  <p class="text-sm">
-    Don’t have an account?
-    <a routerLink="/auth/register" class="link-orange">Sign Up</a>
-  </p>
-
-  <div class="social-login">
-    <button class="google-btn">
-      <img src="https://www.svgrepo.com/show/355037/google.svg" alt="google" />
-      <span>Continue with Google</span>
-    </button>
+    <p class="text-sm">
+      Don’t have an account?
+      <a routerLink="/auth/register" class="link-orange">Sign Up</a>
+    </p>
   </div>
 </div>

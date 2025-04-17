@@ -1,0 +1,5 @@
+.student-content {
+  padding-top: 16px;
+  min-height: calc(100vh - 64px);
+  background-color: var(--gray-50);
+}

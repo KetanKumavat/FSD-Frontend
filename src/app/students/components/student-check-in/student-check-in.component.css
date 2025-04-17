@@ -1,0 +1,140 @@
+@import "../../theme/student-theme.css";
+
+.check-in-page {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.check-in-container {
+  animation: fadeIn 0.5s ease;
+}
+
+.header-area {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.check-in-card {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 24px;
+}
+
+.session-info {
+  background-color: var(--gray-50);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin: 16px 0 24px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-item mat-icon {
+  margin-right: 12px;
+  color: var(--primary);
+}
+
+.check-in-form {
+  margin-top: 32px;
+}
+
+.check-in-form h3 {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  color: var(--dark);
+}
+
+.form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.check-in-button {
+  width: 100%;
+  height: 48px;
+  margin-top: 16px;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+.error-message {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.error-state,
+.success-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.error-state mat-icon,
+.success-state mat-icon {
+  font-size: 64px;
+  height: 64px;
+  width: 64px;
+  margin-bottom: 24px;
+}
+
+.error-state h3,
+.success-state h2 {
+  margin-bottom: 16px;
+  color: var(--dark);
+}
+
+.error-state p,
+.success-state p {
+  margin-bottom: 24px;
+  color: var(--gray-600);
+  max-width: 400px;
+}
+
+.session-name {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--primary);
+  margin-bottom: 24px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .check-in-page {
+    margin: 20px auto;
+  }
+
+  .check-in-card {
+    padding: 16px;
+  }
+}

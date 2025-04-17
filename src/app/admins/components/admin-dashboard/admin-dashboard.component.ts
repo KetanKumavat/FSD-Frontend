@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import { SessionService } from '../../../auth/services/session.service';
+import { OrientationService } from '../../services/orientation.service';
 
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
-  styleUrls: ['./admin-dashboard.component.scss'],
+  styleUrls: ['./admin-dashboard.component.css'],
   standalone: false,
 })
 export class AdminDashboardComponent implements OnInit {
@@ -29,7 +30,8 @@ export class AdminDashboardComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private orientationService: OrientationService
   ) {}
 
   ngOnInit(): void {
@@ -42,10 +44,16 @@ export class AdminDashboardComponent implements OnInit {
     // Load current user
     this.currentUser = this.authService.getCurrentUser();
 
-    // Use mock stats for now
-    this.sessionService.getMockDashboardStats().subscribe({
+    // Use real stats from API now
+    this.orientationService.getDashboardStats().subscribe({
       next: (data: any) => {
-        this.stats = data;
+        this.stats = {
+          totalSessions: data.totalSessions || 0,
+          upcomingSessions: data.upcomingSessions || 0,
+          fullSessions: data.fullSessions || 0,
+          totalRegistered: data.totalRegistered || 0,
+          totalCapacity: data.totalCapacity || 0,
+        };
         this.loading = false;
       },
       error: (error) => {
@@ -54,19 +62,15 @@ export class AdminDashboardComponent implements OnInit {
       },
     });
 
-    // Mock sessions data if needed
-    this.sessions = [
-      {
-        id: 1,
-        title: 'Computer Science Orientation',
-        date: new Date(),
-        startTime: '09:00 AM',
-        endTime: '11:00 AM',
-        location: 'Building A, Room 101',
-        capacity: 30,
-        registeredCount: 25,
+    // Load recent sessions
+    this.orientationService.getRecentSessions().subscribe({
+      next: (sessions: any[]) => {
+        this.sessions = sessions || [];
       },
-      // Add more mock sessions as needed
-    ];
+      error: (error) => {
+        console.error('Error loading recent sessions', error);
+        this.sessions = [];
+      },
+    });
   }
 }

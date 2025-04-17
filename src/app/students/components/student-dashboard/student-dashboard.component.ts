@@ -6,7 +6,6 @@ import {
   OrientationSession,
 } from '../../../core/models/orientation.model';
 import { Student } from '../../../core/models/student.model';
-import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-student-dashboard',
@@ -18,10 +17,8 @@ export class StudentDashboardComponent implements OnInit {
   departments: Orientation[] = [];
   currentStudent: Student | null = null;
   loading = false;
-  error = '';
-
-  // Add these missing properties
   registeredSessions: OrientationSession[] = [];
+  error = '';
   displayedColumns: string[] = ['title', 'date', 'time', 'location', 'actions'];
 
   constructor(
@@ -62,14 +59,14 @@ export class StudentDashboardComponent implements OnInit {
     });
   }
 
-  // Add this missing method
   loadRegisteredSessions(): void {
     this.studentService.getStudentOrientations().subscribe({
       next: (sessions) => {
-        this.registeredSessions = sessions;
+        this.registeredSessions = sessions || [];
       },
       error: (err) => {
         console.error('Failed to load registered sessions', err);
+        this.registeredSessions = [];
       },
     });
   }
@@ -91,5 +88,25 @@ export class StudentDashboardComponent implements OnInit {
           });
       }
     }
+  }
+
+  // Add these helper methods to your component class
+  getDepartmentName(): string {
+    if (!this.departments || !this.currentStudent) return 'Not Assigned';
+
+    const dept = this.departments.find(
+      (d) => d.departmentID === this.currentStudent?.departmentId
+    );
+    return dept?.departmentName || 'Not Assigned';
+  }
+
+  getDepartmentLocation(): string {
+    if (!this.departments || !this.currentStudent)
+      return 'Information not available';
+
+    const dept = this.departments.find(
+      (d) => d.departmentID === this.currentStudent?.departmentId
+    );
+    return dept?.location || 'Information not available';
   }
 }

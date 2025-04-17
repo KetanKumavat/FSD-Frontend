@@ -1,62 +1,172 @@
-<div class="dashboard-container">
-  <div class="dashboard-header">
-    <h1>My Registered Sessions</h1>
+<div class="student-page dashboard-page">
+  <div class="page-header">
+    <h1 class="page-title">Student Dashboard</h1>
+    <p class="page-subtitle" *ngIf="currentStudent">
+      Welcome, {{ currentStudent?.firstName }} {{ currentStudent?.lastName }}!
+    </p>
   </div>
 
   <div *ngIf="loading" class="loading-container">
-    <mat-spinner></mat-spinner>
+    <mat-spinner color="accent" diameter="40"></mat-spinner>
+    <p>Loading your information...</p>
   </div>
 
   <div *ngIf="!loading" class="dashboard-content">
-    <div *ngIf="registeredSessions.length === 0" class="no-sessions">
-      <p>You haven't registered for any orientation sessions yet.</p>
-      <button mat-raised-button color="primary" routerLink="/student/sessions">
-        Browse Available Sessions
-      </button>
+    <!-- Quick Info Cards -->
+    <div class="info-cards">
+      <div class="info-card">
+        <div class="info-card-icon">
+          <mat-icon>event</mat-icon>
+        </div>
+        <div class="info-card-content">
+          <h3 class="info-card-title">Registered Sessions</h3>
+          <p class="info-card-value">{{ registeredSessions?.length || 0 }}</p>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-icon">
+          <mat-icon>school</mat-icon>
+        </div>
+        <div class="info-card-content">
+          <h3 class="info-card-title">Department</h3>
+          <p class="info-card-value">{{ getDepartmentName() }}</p>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-icon">
+          <mat-icon>calendar_today</mat-icon>
+        </div>
+        <div class="info-card-content">
+          <h3 class="info-card-title">Next Session</h3>
+          <p class="info-card-value" *ngIf="registeredSessions?.length">
+            {{ registeredSessions[0]?.date | date : "mediumDate" }}
+          </p>
+          <p class="info-card-value" *ngIf="!registeredSessions?.length">
+            No upcoming sessions
+          </p>
+        </div>
+      </div>
     </div>
 
-    <table mat-table [dataSource]="registeredSessions" class="mat-elevation-z2" *ngIf="registeredSessions.length > 0">
-      <ng-container matColumnDef="title">
-        <th mat-header-cell *matHeaderCellDef>Title</th>
-        <td mat-cell *matCellDef="let session">{{session.title}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="date">
-        <th mat-header-cell *matHeaderCellDef>Date</th>
-        <td mat-cell *matCellDef="let session">{{session.date | date:'mediumDate'}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="time">
-        <th mat-header-cell *matHeaderCellDef>Time</th>
-        <td mat-cell *matCellDef="let session">{{session.startTime}} - {{session.endTime}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="location">
-        <th mat-header-cell *matHeaderCellDef>Location</th>
-        <td mat-cell *matCellDef="let session">{{session.location}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let session">
-          <button mat-icon-button [routerLink]="['/student/sessions', session.id]" matTooltip="View Details">
-            <mat-icon>visibility</mat-icon>
+    <div class="dashboard-sections">
+      <!-- Upcoming Sessions Section -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">My Registered Sessions</h2>
+          <button
+            mat-flat-button
+            color="primary"
+            routerLink="/student/sessions"
+          >
+            View All Sessions
           </button>
-          <button mat-icon-button (click)="unregisterFromSession(session.id)" matTooltip="Unregister">
-            <mat-icon>event_busy</mat-icon>
+        </div>
+
+        <div *ngIf="registeredSessions?.length === 0" class="empty-state">
+          <mat-icon>event_busy</mat-icon>
+          <p>You haven't registered for any orientation sessions yet.</p>
+          <button
+            mat-raised-button
+            color="primary"
+            routerLink="/student/sessions"
+          >
+            Browse Available Sessions
           </button>
-        </td>
-      </ng-container>
+        </div>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+        <div
+          class="session-cards"
+          *ngIf="registeredSessions && registeredSessions.length > 0"
+        >
+          <mat-card
+            class="session-card"
+            *ngFor="let session of registeredSessions.slice(0, 3)"
+          >
+            <mat-card-header>
+              <mat-card-title>{{
+                session.title || "Orientation Session"
+              }}</mat-card-title>
+              <mat-card-subtitle>{{ getDepartmentName() }}</mat-card-subtitle>
+            </mat-card-header>
 
-    <div class="browse-button" *ngIf="registeredSessions.length > 0">
+            <mat-card-content>
+              <div class="session-detail">
+                <mat-icon>calendar_today</mat-icon>
+                <span>{{ session.date | date : "mediumDate" }}</span>
+              </div>
+              <div class="session-detail">
+                <mat-icon>access_time</mat-icon>
+                <span>{{ session.time || "10:00 AM" }}</span>
+              </div>
+              <div class="session-detail">
+                <mat-icon>room</mat-icon>
+                <span>{{ session.location || "Campus Center" }}</span>
+              </div>
+            </mat-card-content>
+
+            <mat-card-actions>
+              <button
+                mat-button
+                color="accent"
+                [routerLink]="[
+                  '/student/sessions/details',
+                  session.id || session.orientationID
+                ]"
+              >
+                View Details
+              </button>
+              <button
+                mat-button
+                color="warn"
+                (click)="
+                  unregisterFromSession(session.id || session.orientationID)
+                "
+              >
+                Unregister
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+
+      <!-- Department Information -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">My Department</h2>
+        </div>
+
+        <mat-card class="department-card">
+          <mat-card-content>
+            <div class="department-info" *ngIf="currentStudent?.departmentId">
+              <h3>{{ getDepartmentName() }}</h3>
+              <p class="department-location">
+                <mat-icon>location_on</mat-icon>
+                <span>{{ getDepartmentLocation() }}</span>
+              </p>
+              <p class="department-description">
+                Get ready for an exciting orientation program with comprehensive
+                information about your courses, faculty introductions, and
+                academic resources available to you.
+              </p>
+            </div>
+
+            <div class="empty-state" *ngIf="!currentStudent?.departmentId">
+              <mat-icon>school</mat-icon>
+              <p>No department assigned. Please contact the administrator.</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="quick-links">
       <button mat-raised-button color="primary" routerLink="/student/sessions">
-        Browse More Sessions
+        <mat-icon>event</mat-icon>
+        Browse Sessions
       </button>
     </div>
   </div>
 </div>
-

@@ -26,7 +26,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         <h1>Department Management</h1>
         <button
           mat-raised-button
-          color="primary"
+          class="add-button"
           (click)="openDepartmentDialog()"
         >
           <mat-icon>add</mat-icon> Add Department
@@ -34,7 +34,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
       </div>
 
       <div *ngIf="loading" class="loading-container">
-        <mat-spinner></mat-spinner>
+        <mat-spinner color="accent"></mat-spinner>
       </div>
 
       <div *ngIf="!loading" class="departments-grid">
@@ -43,48 +43,55 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
           class="department-card"
           (click)="viewSessions(dept)"
         >
-          <mat-card-header>
-            <mat-card-title>{{ dept.departmentName }}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <p><mat-icon>location_on</mat-icon> {{ dept.location }}</p>
-            <p>
-              <mat-icon>event</mat-icon> {{ getSessionCount(dept) }} Sessions
-            </p>
-          </mat-card-content>
-          <mat-card-actions>
-            <button
-              mat-button
-              color="primary"
-              (click)="viewSessions(dept); $event.stopPropagation()"
-            >
-              <mat-icon>visibility</mat-icon> View Sessions
-            </button>
-            <button
-              mat-button
-              color="accent"
-              (click)="editDepartment(dept); $event.stopPropagation()"
-            >
-              <mat-icon>edit</mat-icon> Edit
-            </button>
-            <button
-              mat-button
-              color="warn"
-              (click)="deleteDepartment(dept); $event.stopPropagation()"
-            >
-              <mat-icon>delete</mat-icon> Delete
-            </button>
-          </mat-card-actions>
+          <div class="card-indicator"></div>
+          <div class="card-content">
+            <mat-card-header>
+              <mat-card-title>{{ dept.departmentName }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="location">
+                <mat-icon>location_on</mat-icon> {{ dept.location }}
+              </p>
+              <p class="sessions">
+                <mat-icon>event</mat-icon> {{ getSessionCount(dept) }} Sessions
+              </p>
+            </mat-card-content>
+            <mat-card-actions>
+              <button
+                mat-button
+                class="view-btn"
+                (click)="viewSessions(dept); $event.stopPropagation()"
+              >
+                <mat-icon>visibility</mat-icon> View
+              </button>
+              <button
+                mat-button
+                class="edit-btn"
+                (click)="editDepartment(dept); $event.stopPropagation()"
+              >
+                <mat-icon>edit</mat-icon> Edit
+              </button>
+              <button
+                mat-button
+                class="delete-btn"
+                (click)="deleteDepartment(dept); $event.stopPropagation()"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-card-actions>
+          </div>
         </mat-card>
       </div>
 
       <div *ngIf="!loading && departments.length === 0" class="empty-state">
-        <mat-icon>school</mat-icon>
+        <div class="empty-icon">
+          <mat-icon>school</mat-icon>
+        </div>
         <h2>No Departments Found</h2>
         <p>Create your first department to get started</p>
         <button
           mat-raised-button
-          color="primary"
+          class="add-button"
           (click)="openDepartmentDialog()"
         >
           Add Department
@@ -94,50 +101,197 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   `,
   styles: [
     `
+      :host {
+        --primary-orange: #ff6f00;
+        --light-orange: #ffe0b2;
+        --hover-orange: #ff9800;
+        --card-bg: #ffffff;
+        --text-primary: #333333;
+        --text-secondary: #757575;
+        --border-radius: 12px;
+      }
+
       .departments-container {
         max-width: 1200px;
         margin: 0 auto;
+        padding: 20px;
       }
+
       .header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 24px;
+        margin-bottom: 32px;
       }
+
+      .header h1 {
+        font-size: 28px;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin: 0;
+      }
+
+      .add-button {
+        background-color: var(--primary-orange);
+        color: white;
+        border-radius: 30px;
+        padding: 0 24px;
+        height: 44px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+      }
+
+      .add-button:hover {
+        background-color: var(--hover-orange);
+        box-shadow: 0 4px 8px rgba(255, 111, 0, 0.3);
+        transform: translateY(-2px);
+      }
+
       .departments-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 24px;
       }
+
       .department-card {
-        cursor: pointer;
+        position: relative;
+        border-radius: var(--border-radius);
+        border: none;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
         transition: all 0.3s ease;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        background-color: var(--card-bg);
       }
+
+      .card-indicator {
+        width: 6px;
+        background-color: var(--primary-orange);
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+
+      .card-content {
+        padding: 16px 16px 8px 24px;
+        flex: 1;
+      }
+
       .department-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 15px 20px rgba(0, 0, 0, 0.1);
       }
+
+      mat-card-header {
+        padding: 0;
+        margin-bottom: 12px;
+      }
+
+      mat-card-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      mat-card-content {
+        padding: 0;
+        margin-bottom: 16px;
+      }
+
       mat-card-content p {
         display: flex;
         align-items: center;
         gap: 8px;
         margin: 8px 0;
+        color: var(--text-secondary);
+        font-size: 14px;
       }
+
+      mat-card-content mat-icon {
+        color: var(--primary-orange);
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+      }
+
+      mat-card-actions {
+        padding: 8px 0;
+        display: flex;
+        justify-content: flex-start;
+        gap: 4px;
+        border-top: 1px solid #f0f0f0;
+        margin: 0;
+      }
+
+      mat-card-actions button {
+        min-width: auto;
+      }
+
+      .view-btn {
+        color: var(--primary-orange);
+      }
+
+      .edit-btn {
+        color: rgb(0, 0, 0);
+      }
+
+      .delete-btn {
+        color: #ea4335;
+        min-width: 40px !important;
+      }
+
       .empty-state {
         text-align: center;
-        padding: 48px 0;
-        color: #757575;
+        padding: 64px 0;
+        color: var(--text-secondary);
+        background-color: rgba(255, 240, 229, 0.3);
+        border-radius: var(--border-radius);
+        margin-top: 32px;
       }
+
+      .empty-icon {
+        background-color: var(--light-orange);
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+      }
+
       .empty-state mat-icon {
-        font-size: 48px;
-        height: 48px;
-        width: 48px;
-        margin-bottom: 16px;
+        font-size: 40px;
+        height: 40px;
+        width: 40px;
+        color: var(--primary-orange);
       }
+
+      .empty-state h2 {
+        color: var(--text-primary);
+        margin-bottom: 8px;
+      }
+
+      .empty-state p {
+        margin-bottom: 24px;
+      }
+
       .loading-container {
         display: flex;
         justify-content: center;
-        margin: 48px 0;
+        margin: 64px 0;
+      }
+
+      /* Make spinner use orange color */
+      ::ng-deep .mat-mdc-progress-spinner.mat-accent circle {
+        stroke: var(--primary-orange) !important;
       }
     `,
   ],

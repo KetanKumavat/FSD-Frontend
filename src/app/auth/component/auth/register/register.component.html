@@ -1,163 +1,172 @@
-<!-- register.component.html -->
-<div class="form-container">
-  <p class="title">Create Account</p>
+<div class="login-page-container">
+  <div class="form-container">
+    <p class="title">Create Account</p>
 
-  <form class="form" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
-    <!-- Common fields -->
-    <input
-      type="email"
-      class="input"
-      placeholder="Email Address"
-      formControlName="email"
-    />
-    <div
-      *ngIf="
-        registrationForm.controls['email']?.invalid &&
-        registrationForm.controls['email']?.touched
-      "
-    >
-      <small *ngIf="registrationForm.controls['email']?.errors?.['required']"
-        >Email is required.</small
-      >
-      <small *ngIf="registrationForm.controls['email']?.errors?.['email']"
-        >Email is not valid.</small
-      >
-    </div>
-
-    <input
-      [type]="hidePassword ? 'password' : 'text'"
-      class="input"
-      placeholder="Password"
-      formControlName="password"
-    />
-    <div
-      *ngIf="
-        registrationForm.controls['password']?.invalid &&
-        registrationForm.controls['password']?.touched
-      "
-    >
-      <small *ngIf="registrationForm.controls['password']?.errors?.['required']"
-        >Password is required.</small
-      >
-      <small
-        *ngIf="registrationForm.controls['password']?.errors?.['minlength']"
-      >
-        Password must be at least 6 characters.
-      </small>
-    </div>
-
-    <!-- Role selection -->
-    <div class="role-selection">
-      <label>Register as:</label>
-      <div class="role-options">
-        <label *ngFor="let role of roles">
-          <input type="radio" [value]="role" formControlName="role" />
-          {{ role | titlecase }}
-        </label>
-      </div>
-    </div>
-
-    <!-- Conditional fields for Student -->
-    <ng-container *ngIf="registrationForm.get('role')?.value === 'student'">
+    <form class="form" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
       <input
-        type="text"
+        type="email"
         class="input"
-        placeholder="First Name"
-        formControlName="firstName"
+        placeholder="Email Address"
+        formControlName="email"
       />
       <div
         *ngIf="
-          registrationForm.controls['firstName']?.invalid &&
-          registrationForm.controls['firstName']?.touched
+          registrationForm.controls['email']?.invalid &&
+          registrationForm.controls['email']?.touched
         "
       >
-        <small>First name is required.</small>
-      </div>
-
-      <input
-        type="text"
-        class="input"
-        placeholder="Last Name"
-        formControlName="lastName"
-      />
-      <div
-        *ngIf="
-          registrationForm.controls['lastName']?.invalid &&
-          registrationForm.controls['lastName']?.touched
-        "
-      >
-        <small>Last name is required.</small>
-      </div>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Department</mat-label>
-        <mat-select formControlName="departmentId" required>
-          <mat-option
-            *ngFor="let dept of departments"
-            [value]="dept.departmentID"
-          >
-            {{ dept.departmentName }}
-          </mat-option>
-        </mat-select>
-        <mat-error
-          *ngIf="registrationForm.get('departmentId')?.hasError('required')"
+        <small *ngIf="registrationForm.controls['email']?.errors?.['required']"
+          >Email is required.</small
         >
-          Department is required
-        </mat-error>
-      </mat-form-field>
-
-      <input
-        type="tel"
-        class="input"
-        placeholder="Phone Number (Optional)"
-        formControlName="phoneNumber"
-      />
-    </ng-container>
-
-    <!-- Conditional fields for Admin -->
-    <ng-container *ngIf="registrationForm.get('role')?.value === 'admin'">
-      <input
-        type="text"
-        class="input"
-        placeholder="Full Name"
-        formControlName="fullName"
-      />
-      <div
-        *ngIf="
-          registrationForm.controls['fullName']?.invalid &&
-          registrationForm.controls['fullName']?.touched
-        "
-      >
-        <small>Full name is required.</small>
+        <small *ngIf="registrationForm.controls['email']?.errors?.['email']"
+          >Email is not valid.</small
+        >
       </div>
 
       <input
-        type="text"
+        [type]="hidePassword ? 'password' : 'text'"
         class="input"
-        placeholder="Designation (Optional)"
-        formControlName="designation"
+        placeholder="Password"
+        formControlName="password"
       />
-    </ng-container>
+      <div
+        *ngIf="
+          registrationForm.controls['password']?.invalid &&
+          registrationForm.controls['password']?.touched
+        "
+      >
+        <small
+          *ngIf="registrationForm.controls['password']?.errors?.['required']"
+          >Password is required.</small
+        >
+        <small
+          *ngIf="registrationForm.controls['password']?.errors?.['minlength']"
+        >
+          Password must be at least 6 characters.
+        </small>
+      </div>
 
-    <div *ngIf="errorMessage" style="color: #ff5252; margin-bottom: 10px">
-      {{ errorMessage }}
-    </div>
+      <div class="role-selection">
+        <label>Register as:</label>
+        <div class="role-options">
+          <label *ngFor="let role of roles">
+            <input type="radio" [value]="role" formControlName="role" />
+            {{ role | titlecase }}
+          </label>
+        </div>
+      </div>
 
-    <button
-      class="form-btn"
-      type="submit"
-      [disabled]="registrationForm.invalid || loading"
-    >
-      <span
-        *ngIf="loading"
-        class="spinner-border spinner-border-sm mr-1"
-      ></span>
-      Register
-    </button>
-  </form>
+      <ng-container *ngIf="registrationForm.get('role')?.value === 'student'">
+        <input
+          type="text"
+          class="input"
+          placeholder="First Name"
+          formControlName="firstName"
+        />
+        <div
+          *ngIf="
+            registrationForm.controls['firstName']?.invalid &&
+            registrationForm.controls['firstName']?.touched
+          "
+        >
+          <small>First name is required.</small>
+        </div>
 
-  <p class="sign-up-label">
-    Already have an account?
-    <a routerLink="/auth/login" class="sign-up-link">Sign In</a>
-  </p>
+        <input
+          type="text"
+          class="input"
+          placeholder="Last Name"
+          formControlName="lastName"
+        />
+        <div
+          *ngIf="
+            registrationForm.controls['lastName']?.invalid &&
+            registrationForm.controls['lastName']?.touched
+          "
+        >
+          <small>Last name is required.</small>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Department</mat-label>
+          <mat-select formControlName="departmentId" required>
+            <mat-option
+              *ngFor="let dept of departments"
+              [value]="dept.departmentID"
+            >
+              {{ dept.departmentName }}
+            </mat-option>
+          </mat-select>
+          <mat-error
+            *ngIf="registrationForm.get('departmentId')?.hasError('required')"
+          >
+            Department is required
+          </mat-error>
+        </mat-form-field>
+
+        <input
+          type="tel"
+          class="input"
+          placeholder="Phone Number (Optional)"
+          formControlName="phoneNumber"
+        />
+      </ng-container>
+
+      <ng-container *ngIf="registrationForm.get('role')?.value === 'admin'">
+        <input
+          type="text"
+          class="input"
+          placeholder="Full Name"
+          formControlName="fullName"
+        />
+        <div
+          *ngIf="
+            registrationForm.controls['fullName']?.invalid &&
+            registrationForm.controls['fullName']?.touched
+          "
+        >
+          <small>Full name is required.</small>
+        </div>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Admin Access Key</mat-label>
+          <input
+            matInput
+            type="password"
+            formControlName="adminAccessKey"
+            required
+          />
+          <mat-error
+            *ngIf="
+              registrationForm.get('adminAccessKey')?.invalid &&
+              registrationForm.get('adminAccessKey')?.touched
+            "
+          >
+            Admin access key is required
+          </mat-error>
+        </mat-form-field>
+      </ng-container>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <button
+        class="form-btn"
+        type="submit"
+        [disabled]="registrationForm.invalid || loading"
+      >
+        <span
+          *ngIf="loading"
+          class="spinner-border spinner-border-sm mr-1"
+        ></span>
+        Register
+      </button>
+    </form>
+
+    <p class="sign-up-label">
+      Already have an account?
+      <a routerLink="/auth/login" class="sign-up-link">Sign In</a>
+    </p>
+  </div>
 </div>

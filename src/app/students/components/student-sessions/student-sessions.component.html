@@ -1,75 +1,121 @@
-<div class="sessions-container">
-  <div class="sessions-header">
-    <h1>Available Orientation Sessions</h1>
+<div class="student-page sessions-page">
+  <div class="page-header">
+    <h1 class="page-title">Available Orientation Sessions</h1>
+    <p class="page-subtitle">
+      Browse and register for upcoming orientation sessions
+    </p>
   </div>
 
-  <mat-form-field appearance="outline" class="filter-field">
-    <mat-label>Search Sessions</mat-label>
-    <input
-      matInput
-      [(ngModel)]="searchText"
-      (keyup)="applyFilter()"
-      placeholder="Search by faculty name..."
-    />
-    <mat-icon matSuffix>search</mat-icon>
-  </mat-form-field>
+  <mat-card class="filter-card">
+    <mat-card-content>
+      <div class="search-field">
+        <mat-icon>search</mat-icon>
+        <input
+          matInput
+          [(ngModel)]="searchText"
+          (keyup)="applyFilter()"
+          placeholder="Search sessions by title, faculty, or location"
+        />
+        <button
+          *ngIf="searchText"
+          mat-icon-button
+          (click)="searchText = ''; applyFilter()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
 
   <div *ngIf="loading" class="loading-container">
-    <mat-spinner></mat-spinner>
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading available sessions...</p>
   </div>
 
-  <div *ngIf="!loading" class="sessions-content">
-    <div *ngIf="availableSessions.length === 0" class="no-sessions">
-      <p>No available orientation sessions at this time.</p>
-    </div>
+  <div *ngIf="availableSessions.length === 0" class="empty-state">
+    <mat-icon>event_busy</mat-icon>
+    <p>No available orientation sessions at this time.</p>
+  </div>
 
-    <div class="sessions-grid">
-      <mat-card
-        *ngFor="
-          let session of availableSessions | filter : searchText : 'facultyName'
-        "
-        class="session-card"
-      >
-        <mat-card-header>
-          <mat-card-title>Session #{{ session.orientationID }}</mat-card-title>
-          <mat-card-subtitle
-            >Faculty: {{ session.facultyName }}</mat-card-subtitle
-          >
-        </mat-card-header>
+  <div class="session-grid" *ngIf="availableSessions.length > 0">
+    <mat-card class="session-card" *ngFor="let session of availableSessions">
+      <div class="session-status" *ngIf="isRegistered(session.orientationID)">
+        <span class="badge badge-accent">Registered</span>
+      </div>
 
-        <mat-card-content>
-          <div class="session-details">
-            <p><mat-icon>access_time</mat-icon> {{ session.time }}</p>
-            <p>
-              <mat-icon>people</mat-icon>
-              <span> {{ session.attendees.length }} registered </span>
-            </p>
+      <mat-card-header>
+        <mat-card-title>{{
+          session.title || "Orientation Session #" + session.orientationID
+        }}</mat-card-title>
+        <mat-card-subtitle
+          >Faculty: {{ session.facultyName || "TBA" }}</mat-card-subtitle
+        >
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="session-info">
+          <div class="info-item">
+            <mat-icon>calendar_today</mat-icon>
+            <span>{{ session.date | date : "mediumDate" }}</span>
           </div>
-        </mat-card-content>
+          <div class="info-item">
+            <mat-icon>access_time</mat-icon>
+            <span>{{ session.time || "10:00 AM" }}</span>
+          </div>
+          <div class="info-item">
+            <mat-icon>place</mat-icon>
+            <span>{{ session.location || "TBA" }}</span>
+          </div>
+          <div class="info-item">
+            <mat-icon>people</mat-icon>
+            <span
+              ><strong>{{ session.attendees?.length || 0 }}</strong
+              >/{{ session.capacity || 30 }} registered</span
+            >
+          </div>
+        </div>
+      </mat-card-content>
 
-        <mat-card-actions align="end">
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="registerForSession(session.orientationID)"
-            [disabled]="isRegistered(session.orientationID)"
-          >
-            {{
-              isRegistered(session.orientationID) ? "REGISTERED" : "REGISTER"
-            }}
-          </button>
-        </mat-card-actions>
-      </mat-card>
-    </div>
+      <mat-card-actions align="end">
+        <button
+          mat-button
+          color="accent"
+          [routerLink]="['/student/sessions/details', session.orientationID]"
+        >
+          View Details
+        </button>
 
-    <div class="my-sessions-button">
-      <button
-        mat-raised-button
-        color="accent"
-        routerLink="/student/my-sessions"
-      >
-        View My Registered Sessions
-      </button>
-    </div>
+        <button
+          mat-raised-button
+          *ngIf="
+            !isRegistered(session.orientationID) &&
+            (session.attendees?.length || 0) < (session.capacity || 30)
+          "
+          color="primary"
+          (click)="registerForSession(session.orientationID)"
+        >
+          Register
+        </button>
+
+        <button
+          mat-button
+          *ngIf="isRegistered(session.orientationID)"
+          color="warn"
+        >
+          Cancel Registration
+        </button>
+
+        <button
+          mat-button
+          disabled
+          *ngIf="
+            !isRegistered(session.orientationID) &&
+            (session.attendees?.length || 0) >= (session.capacity || 30)
+          "
+        >
+          Session Full
+        </button>
+      </mat-card-actions>
+    </mat-card>
   </div>
 </div>

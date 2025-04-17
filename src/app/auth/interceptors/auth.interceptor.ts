@@ -9,10 +9,11 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   intercept(
     request: HttpRequest<unknown>,
@@ -21,14 +22,21 @@ export class AuthInterceptor implements HttpInterceptor {
     if (
       request.url.includes('/auth/') ||
       request.url.includes('/public/') ||
-      (request.url.includes('/orientations/departments') &&
+      (request.url.endsWith('/orientations/departments') &&
         request.method === 'GET')
     ) {
-      return next.handle(request);
+      const cleanRequest = request.clone({
+        headers: request.headers.delete('Authorization'),
+      });
+      console.log('Clean request without auth header sent to:', request.url);
+      return next.handle(cleanRequest);
     }
-    const token = localStorage.getItem('auth_token');
 
-    if (token) {
+    const token = localStorage.getItem('auth_token');
+    console.log('URL being intercepted:', request.url);
+    console.log('Token exists:', !!token);
+
+    if (token && token !== 'null' && token !== 'undefined') {
       request = request.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`,
@@ -39,11 +47,40 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
-          // Unauthorized - clear token and redirect to login
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('user_data');
-          this.router.navigate(['/auth/login']);
+          // Unauthorized - token invalid or expired
+          console.error('Authentication failed:', request.url, error);
+
+          // Clear auth data
+          this.authService.logout();
+
+          // Redirect to login
+          this.router.navigate(['/auth/login'], {
+            queryParams: {
+              returnUrl: this.router.url,
+              reason: 'session_expired',
+            },
+          });
+        } else if (error.status === 403) {
+          // Forbidden - user doesn't have permission
+          console.error('Access denied for URL:', request.url);
+          console.error('User lacks permission for this resource');
+
+          // Get current user role for debugging
+          const userData = localStorage.getItem('user_data');
+          if (userData) {
+            try {
+              const user = JSON.parse(userData);
+              console.error('Current user role:', user.role);
+            } catch (e) {
+              console.error('Failed to parse user data');
+            }
+          }
+
+          // Optional: Navigate to access denied page
+          // this.router.navigate(['/access-denied']);
         }
+
+        // Always propagate the error to the component for handling
         return throwError(() => error);
       })
     );

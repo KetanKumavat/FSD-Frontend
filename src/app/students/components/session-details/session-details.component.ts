@@ -3,8 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   SessionService,
-  OrientationSession,
   OrientationAttendee,
+  OrientationSession as ServiceOrientationSession,
 } from '../../../auth/services/session.service';
 import { AuthService } from '../../../auth/services/auth.service';
 
@@ -16,7 +16,7 @@ import { AuthService } from '../../../auth/services/auth.service';
 })
 export class SessionDetailsComponent implements OnInit {
   sessionId!: number;
-  session: OrientationSession | undefined;
+  session: ServiceOrientationSession | undefined;
   attendees: OrientationAttendee[] = [];
   loading = true;
   isAdmin = false;
@@ -180,5 +180,19 @@ export class SessionDetailsComponent implements OnInit {
     } else {
       this.router.navigate(['/login']);
     }
+  }
+
+  getDepartmentName(): string {
+    if (!this.session) return 'Unknown Department';
+    return (
+      this.session.department?.name ||
+      this.session.department?.departmentName ||
+      'Unknown Department'
+    );
+  }
+
+  getFacultyName(): string {
+    if (!this.session) return 'TBA';
+    return this.session.faculty || this.session.facultyName || 'TBA';
   }
 }

@@ -61,7 +61,7 @@ export class RegisterComponent implements OnInit {
         'firstName',
         'lastName',
         'phoneNumber',
-        'departmentId', // Remove departmentId for admin role
+        'departmentId',
       ];
     }
 
@@ -88,6 +88,10 @@ export class RegisterComponent implements OnInit {
         this.fb.control('', Validators.required)
       );
       this.registrationForm.addControl('designation', this.fb.control(''));
+      this.registrationForm.addControl(
+        'adminAccessKey',
+        this.fb.control('', Validators.required)
+      );
     }
   }
 

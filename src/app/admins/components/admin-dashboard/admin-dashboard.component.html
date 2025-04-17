@@ -42,86 +42,92 @@
     </div>
 
     <div class="recent-sessions">
-      <h2>Recent Sessions</h2>
-      <table
-        mat-table
-        [dataSource]="sessions.slice(0, 5)"
-        class="mat-elevation-z2"
-      >
-        <ng-container matColumnDef="title">
-          <th mat-header-cell *matHeaderCellDef>Title</th>
-          <td mat-cell *matCellDef="let session">{{ session?.title }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="date">
-          <th mat-header-cell *matHeaderCellDef>Date</th>
-          <td mat-cell *matCellDef="let session">
-            {{ session?.date | date : "mediumDate" }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="time">
-          <th mat-header-cell *matHeaderCellDef>Time</th>
-          <td mat-cell *matCellDef="let session">
-            {{ session?.startTime }} - {{ session?.endTime }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="location">
-          <th mat-header-cell *matHeaderCellDef>Location</th>
-          <td mat-cell *matCellDef="let session">{{ session?.location }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="capacity">
-          <th mat-header-cell *matHeaderCellDef>Capacity</th>
-          <td mat-cell *matCellDef="let session">
-            {{ session?.registeredCount }} / {{ session?.capacity }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Actions</th>
-          <td mat-cell *matCellDef="let session">
-            <button
-              mat-icon-button
-              [routerLink]="['/admin/sessions', session.id]"
-            >
-              <mat-icon>visibility</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr
-          mat-header-row
-          *matHeaderRowDef="[
-            'title',
-            'date',
-            'time',
-            'location',
-            'capacity',
-            'actions'
-          ]"
-        ></tr>
-        <tr
-          mat-row
-          *matRowDef="
-            let row;
-            columns: [
-              'title',
-              'date',
-              'time',
-              'location',
-              'capacity',
-              'actions'
-            ]
-          "
-        ></tr>
-      </table>
-
-      <div class="view-all-button">
-        <button mat-raised-button color="primary" routerLink="/admin/sessions">
-          View All Sessions
+      <div class="section-header">
+        <h2>Recent Sessions</h2>
+        <button mat-flat-button color="primary" routerLink="/admin/sessions">
+          View All <mat-icon>arrow_forward</mat-icon>
         </button>
+      </div>
+
+      <div class="sessions-table-container">
+        <div *ngIf="sessions && sessions.length === 0" class="no-data">
+          <mat-icon>event_busy</mat-icon>
+          <p>No recent sessions found</p>
+        </div>
+
+        <div
+          *ngIf="sessions && sessions.length > 0"
+          class="modern-table-wrapper"
+        >
+          <div
+            class="session-card"
+            *ngFor="let session of sessions.slice(0, 5)"
+          >
+            <div class="session-info">
+              <div class="session-title-area">
+                <h3>{{ session?.title }}</h3>
+                <div class="session-department">
+                  {{ session?.department?.departmentName || "General" }}
+                </div>
+              </div>
+              <div class="session-details">
+                <div class="session-detail">
+                  <mat-icon>calendar_today</mat-icon>
+                  <span>{{ session?.date | date : "MMM d, y" }}</span>
+                </div>
+                <div class="session-detail">
+                  <mat-icon>access_time</mat-icon>
+                  <span>{{ session?.startTime || "10:00 AM" }}</span>
+                </div>
+                <div class="session-detail">
+                  <mat-icon>location_on</mat-icon>
+                  <span>{{ session?.location || "TBD" }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="session-capacity">
+              <div class="capacity-indicator">
+                <div class="capacity-label">
+                  <span>Registration</span>
+                  <span class="capacity-text"
+                    >{{ session?.registeredCount || 0 }}/{{
+                      session?.capacity || 0
+                    }}</span
+                  >
+                </div>
+                <div class="capacity-bar">
+                  <div
+                    class="capacity-progress"
+                    [style.width.%]="
+                      (session?.registeredCount / session?.capacity) * 100
+                    "
+                    [ngClass]="{
+                      low:
+                        (session?.registeredCount / session?.capacity) * 100 <
+                        40,
+                      medium:
+                        (session?.registeredCount / session?.capacity) * 100 >=
+                          40 &&
+                        (session?.registeredCount / session?.capacity) * 100 <
+                          80,
+                      high:
+                        (session?.registeredCount / session?.capacity) * 100 >=
+                        80
+                    }"
+                  ></div>
+                </div>
+              </div>
+              <button
+                mat-flat-button
+                color="primary"
+                class="view-btn"
+                [routerLink]="['/admin/sessions', session.id]"
+              >
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

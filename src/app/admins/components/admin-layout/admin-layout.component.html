@@ -1,1 +1,56 @@
-<p>admin-layout works!</p>
+<div class="admin-container">
+  <mat-toolbar color="primary" class="toolbar">
+    <button mat-icon-button (click)="drawer.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span>Orientation Portal Admin</span>
+    <span class="spacer"></span>
+
+    <button mat-button class="logout-button" (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-toolbar>
+
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #drawer mode="side" opened class="sidenav">
+      <mat-nav-list>
+        <a
+          mat-list-item
+          routerLink="/admin/dashboard"
+          routerLinkActive="active-link"
+        >
+          <mat-icon>dashboard</mat-icon>
+          <span>Dashboard</span>
+        </a>
+        <a
+          mat-list-item
+          routerLink="/admin/departments"
+          routerLinkActive="active-link"
+        >
+          <mat-icon>account_balance</mat-icon>
+          <span>Departments</span>
+        </a>
+        <a
+          mat-list-item
+          routerLink="/admin/sessions"
+          routerLinkActive="active-link"
+        >
+          <mat-icon>event</mat-icon>
+          <span>Sessions</span>
+        </a>
+        <a
+          mat-list-item
+          routerLink="/admin/reports"
+          routerLinkActive="active-link"
+        >
+          <mat-icon>assessment</mat-icon>
+          <span>Reports</span>
+        </a>
+      </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content class="content">
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

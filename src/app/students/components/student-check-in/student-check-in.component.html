@@ -1,0 +1,126 @@
+<div class="student-page check-in-page">
+  <div class="check-in-container">
+    <div class="header-area">
+      <h1 class="page-title">Orientation Session Check-In</h1>
+    </div>
+
+    <mat-card class="check-in-card">
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Loading session details...</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error && !loading" class="error-state">
+        <mat-icon color="warn">error_outline</mat-icon>
+        <h3>Error</h3>
+        <p>{{ error }}</p>
+        <button
+          mat-flat-button
+          color="primary"
+          routerLink="/students/dashboard"
+        >
+          Back to Dashboard
+        </button>
+      </div>
+
+      <!-- Session Details + Check-in Form -->
+      <div *ngIf="!loading && !error && sessionDetails && !success">
+        <mat-card-header>
+          <mat-card-title>{{ sessionDetails.title }}</mat-card-title>
+          <mat-card-subtitle>
+            {{ sessionDetails.department?.name }}
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="session-info">
+            <div class="info-item">
+              <mat-icon>calendar_today</mat-icon>
+              <span>{{ sessionDetails.startTime | date : "fullDate" }}</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>access_time</mat-icon>
+              <span>{{ sessionDetails.startTime | date : "shortTime" }}</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>location_on</mat-icon>
+              <span>{{ sessionDetails.location || "Not specified" }}</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>person</mat-icon>
+              <span>{{ sessionDetails.faculty || "Not specified" }}</span>
+            </div>
+          </div>
+
+          <div class="check-in-form">
+            <h3>Enter your credentials to check in</h3>
+
+            <form (ngSubmit)="onSubmit()">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Email</mat-label>
+                <input
+                  matInput
+                  type="email"
+                  [(ngModel)]="email"
+                  name="email"
+                  required
+                  placeholder="Enter your email"
+                />
+                <mat-icon matSuffix>email</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Password</mat-label>
+                <input
+                  matInput
+                  type="password"
+                  [(ngModel)]="password"
+                  name="password"
+                  required
+                  placeholder="Enter your password"
+                />
+                <mat-icon matSuffix>lock</mat-icon>
+              </mat-form-field>
+
+              <div *ngIf="error" class="error-message">
+                {{ error }}
+              </div>
+
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                class="check-in-button"
+                [disabled]="submitting"
+              >
+                <mat-spinner
+                  *ngIf="submitting"
+                  diameter="20"
+                  class="spinner"
+                ></mat-spinner>
+                <span *ngIf="!submitting">Check In</span>
+              </button>
+            </form>
+          </div>
+        </mat-card-content>
+      </div>
+
+      <!-- Success State -->
+      <div *ngIf="success" class="success-state">
+        <mat-icon color="primary">check_circle</mat-icon>
+        <h2>Check-In Successful!</h2>
+        <p>{{ successMessage }}</p>
+        <p class="session-name">{{ sessionDetails?.title }}</p>
+        <button
+          mat-flat-button
+          color="primary"
+          routerLink="/students/dashboard"
+        >
+          Return to Dashboard
+        </button>
+      </div>
+    </mat-card>
+  </div>
+</div>

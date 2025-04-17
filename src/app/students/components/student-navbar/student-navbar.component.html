@@ -1,0 +1,56 @@
+<nav class="student-navbar">
+  <div class="navbar-container">
+    <!-- Logo and Brand -->
+    <div class="navbar-brand">
+      <a routerLink="/student/dashboard">
+        <div class="brand-logo">
+          <mat-icon>school</mat-icon>
+          <span class="brand-text">Orientation Portal</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="nav-links" [class.active]="isMenuActive">
+      <a routerLink="/student/dashboard" routerLinkActive="active-link">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/student/sessions" routerLinkActive="active-link">
+        <mat-icon>event</mat-icon>
+        <span>Sessions</span>
+      </a>
+      <a routerLink="/student/profile" routerLinkActive="active-link">
+        <mat-icon>person</mat-icon>
+        <span>Profile</span>
+      </a>
+    </div>
+
+    <!-- User Information and Actions -->
+    <div class="user-actions">
+      <button
+        mat-button
+        class="user-menu-button"
+        [matMenuTriggerFor]="userMenu"
+      >
+        <span class="username">{{ currentStudentName || "Student" }}</span>
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu" xPosition="before">
+        <button mat-menu-item routerLink="/student/profile">
+          <mat-icon>person</mat-icon>
+          <span>My Profile</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <div class="menu-toggle" (click)="toggleMenu()">
+      <mat-icon>{{ isMenuActive ? "close" : "menu" }}</mat-icon>
+    </div>
+  </div>
+</nav>

@@ -23,6 +23,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { SharedModule } from '../shared/shared.module';
 import { DepartmentOrientationsComponent } from './components/department-orientations/department-orientations.component';
 import { OrientationRegistrationComponent } from './components/orientation-registration/orientation-registration.component';
+import { DatePipe } from '@angular/common';
+import { StudentNavbarComponent } from './components/student-navbar/student-navbar.component';
+import { StudentLayoutComponent } from './components/student-layout/student-layout.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +56,10 @@ import { OrientationRegistrationComponent } from './components/orientation-regis
     MatPaginatorModule,
     MatSortModule,
     MatDatepickerModule,
+    StudentNavbarComponent,
+    StudentLayoutComponent,
   ],
+  providers: [DatePipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class StudentsModule {}

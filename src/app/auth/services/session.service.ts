@@ -12,6 +12,14 @@ export interface OrientationSession {
   location: string;
   capacity: number;
   registeredCount: number;
+  faculty?: string;
+  facultyName?: string;
+  department?: {
+    id: number;
+    name: string;
+    departmentName?: string;
+    location?: string;
+  };
 }
 
 export interface OrientationAttendee {

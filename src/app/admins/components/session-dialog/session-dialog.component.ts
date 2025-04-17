@@ -70,7 +70,10 @@ export class SessionDialogComponent implements OnInit {
         session?.capacity || 30,
         [Validators.required, Validators.min(1), Validators.max(500)],
       ],
-      location: [session?.department?.location || '', [Validators.required]],
+      location: [
+        (session?.department as any)?.location || '',
+        [Validators.required],
+      ],
       title: [session?.title || '', [Validators.required]],
     });
   }

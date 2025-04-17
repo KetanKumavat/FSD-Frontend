@@ -31,6 +31,8 @@ export class QrScannerComponent implements OnInit {
   errorMessage = '';
   isProcessing = false;
   studentEmail = '';
+  currentSessionId: number | null = null;
+  showEmailInput: boolean = false;
 
   constructor(private orientationService: OrientationService) {}
 
@@ -62,6 +64,13 @@ export class QrScannerComponent implements OnInit {
     // Clear previous statuses
     this.scanSuccess = false;
     this.scanError = false;
+
+    // Store session ID for later use with email check-in
+    this.currentSessionId = sessionId;
+
+    // Prompt for student email
+    this.showEmailInput = true;
+    this.isProcessing = false;
   }
 
   onSubmitEmail(): void {
@@ -71,17 +80,16 @@ export class QrScannerComponent implements OnInit {
       return;
     }
 
-    if (!this.scanResult.startsWith('session:')) {
+    if (!this.currentSessionId) {
       this.scanError = true;
-      this.errorMessage = 'Invalid QR code';
+      this.errorMessage = 'No session selected';
       return;
     }
 
-    const sessionId = parseInt(this.scanResult.split(':')[1], 10);
     this.isProcessing = true;
 
     this.orientationService
-      .checkInStudent(sessionId, this.studentEmail)
+      .checkInStudent(this.currentSessionId, this.studentEmail)
       .subscribe({
         next: () => {
           this.scanSuccess = true;

@@ -1,1 +1,347 @@
-<p>session-details works!</p>
+<!-- <div class="session-details-container">
+  <div *ngIf="loading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Loading session details...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <h3>Error</h3>
+    <p>{{ error }}</p>
+    <button (click)="router.navigate(['/admin/sessions'])">
+      Back to Sessions
+    </button>
+  </div>
+
+  <div *ngIf="!loading && !error && sessionDetails" class="session-card">
+    <div class="header-section">
+      <h2>{{ sessionDetails.title }}</h2>
+      <div class="session-status" [ngClass]="{ active: sessionDetails.active }">
+        {{ sessionDetails.active ? "Active" : "Inactive" }}
+      </div>
+    </div>
+
+    <div class="session-info">
+      <div class="info-group" *ngIf="sessionDetails.faculty">
+        <label>Faculty:</label>
+        <span>{{ sessionDetails.faculty }}</span>
+      </div>
+      <div class="info-group">
+        <label>Department:</label>
+        <span>{{ sessionDetails.department?.name || "Not assigned" }}</span>
+      </div>
+
+      <div class="info-group">
+        <label>Date & Time:</label>
+        <span>{{ sessionDetails.startTime | date : "medium" }}</span>
+      </div>
+
+      <div class="info-group">
+        <label>Location:</label>
+        <span>{{ sessionDetails.location || "TBD" }}</span>
+      </div>
+
+      <div class="info-group">
+        <label>Capacity:</label>
+        <span>{{ attendees.length }} / {{ sessionDetails.capacity }}</span>
+      </div>
+
+      <div class="info-group">
+        <label>Description:</label>
+        <p class="session-description">{{ sessionDetails.description }}</p>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button
+        class="edit-button"
+        (click)="router.navigate(['/admin/sessions/edit', sessionId])"
+      >
+        Edit Session
+      </button>
+      <button class="check-in-button" (click)="navigateToQrScanner()">
+        Check-In Students
+      </button>
+    </div>
+
+    <div class="qr-section">
+      <h3>Student Self-Check-In</h3>
+      <p>
+        Share this QR code with students to allow them to check in by scanning
+        it:
+      </p>
+
+      <div class="qr-display">
+        <img *ngIf="qrCodeUrl" [src]="qrCodeUrl" alt="Check-in QR Code" />
+      </div>
+
+      <button
+        class="download-button"
+        *ngIf="qrCodeUrl"
+        (click)="downloadQrCode()"
+      >
+        Download QR Code
+      </button>
+    </div>
+
+    <div class="attendees-section">
+      <h3>Attendees ({{ attendees.length }})</h3>
+
+      <button
+        class="download-excel-button"
+        *ngIf="attendees.length > 0"
+        (click)="downloadAttendanceExcel()"
+      >
+        <mat-icon>file_download</mat-icon> Export Attendance
+      </button>
+
+      <div *ngIf="attendees.length === 0" class="no-attendees">
+        No students have checked in yet.
+      </div>
+
+      <table *ngIf="attendees.length > 0" class="attendees-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Check-in Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let attendee of attendees">
+            <td>{{ attendee.name }}</td>
+            <td>{{ attendee.email }}</td>
+            <td>{{ attendee.checkInTime | date : "medium" }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div> -->
+
+<div class="session-details-container">
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner color="accent"></mat-spinner>
+    <p>Loading session details...</p>
+  </div>
+
+  <div *ngIf="error" class="error-container">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <h3>Error Loading Session</h3>
+    <p>{{ error }}</p>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="router.navigate(['/admin/sessions'])"
+    >
+      Back to Sessions
+    </button>
+  </div>
+
+  <div *ngIf="!loading && !error && sessionDetails" class="session-content">
+    <!-- Header with actions -->
+    <div class="session-header">
+      <div class="back-button">
+        <button mat-icon-button (click)="router.navigate(['/admin/sessions'])">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+
+      <div class="header-content">
+        <h1>{{ sessionDetails.title }}</h1>
+        <div class="session-meta">
+          <span class="department">{{ sessionDetails.department?.name }}</span>
+          <span
+            class="status-badge"
+            [ngClass]="{ active: sessionDetails.active }"
+          >
+            {{ sessionDetails.active ? "Active" : "Inactive" }}
+          </span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button
+          mat-stroked-button
+          color="primary"
+          (click)="navigateToQrScanner()"
+        >
+          <mat-icon>qr_code_scanner</mat-icon>
+          Check-In
+        </button>
+
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="router.navigate(['/admin/sessions/edit', sessionId])"
+        >
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+      </div>
+    </div>
+
+    <!-- Session info cards -->
+    <div class="session-info-grid">
+      <mat-card class="info-card">
+        <mat-card-content>
+          <div class="card-icon">
+            <mat-icon>schedule</mat-icon>
+          </div>
+          <div class="card-label">Date & Time</div>
+          <div class="card-value">
+            {{ sessionDetails.startTime | date : "medium" }}
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="info-card">
+        <mat-card-content>
+          <div class="card-icon">
+            <mat-icon>location_on</mat-icon>
+          </div>
+          <div class="card-label">Location</div>
+          <div class="card-value">
+            {{ sessionDetails.location || "Not Specified" }}
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="info-card">
+        <mat-card-content>
+          <div class="card-icon">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="card-label">Faculty</div>
+          <div class="card-value">
+            {{ sessionDetails.faculty || "Not Assigned" }}
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="info-card">
+        <mat-card-content>
+          <div class="card-icon">
+            <mat-icon>group</mat-icon>
+          </div>
+          <div class="card-label">Registration</div>
+          <div class="card-value">
+            {{ attendees.length }} / {{ sessionDetails.capacity }}
+          </div>
+          <div class="capacity-bar">
+            <div
+              class="filled"
+              [style.width.%]="
+                (attendees.length / sessionDetails.capacity) * 100
+              "
+            ></div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Description -->
+    <mat-card class="description-card">
+      <mat-card-header>
+        <mat-card-title>Session Description</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>
+          {{
+            sessionDetails.description ||
+              "No description provided for this orientation session."
+          }}
+        </p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- QR Code Section -->
+    <div class="qr-attendee-section">
+      <!-- QR Code Card -->
+      <mat-card class="qr-card">
+        <mat-card-header>
+          <mat-card-title>Check-In QR Code</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="qr-container">
+            <img *ngIf="qrCodeUrl" [src]="qrCodeUrl" alt="Check-in QR Code" />
+          </div>
+          <p class="qr-instructions">
+            This QR code allows students to check in directly from their phones.
+            When scanned, it opens a webpage where they can enter their login
+            credentials to record attendance.
+          </p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button
+            mat-stroked-button
+            color="primary"
+            *ngIf="qrCodeUrl"
+            (click)="downloadQrCode()"
+          >
+            <mat-icon>download</mat-icon>
+            Download QR Code
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <!-- Attendee List Card -->
+      <mat-card class="attendees-card">
+        <mat-card-header>
+          <mat-card-title>Attendees ({{ attendees.length }})</mat-card-title>
+          <button
+            mat-icon-button
+            *ngIf="attendees.length > 0"
+            color="primary"
+            (click)="downloadAttendanceExcel()"
+            matTooltip="Export to Excel"
+          >
+            <mat-icon>file_download</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="attendees.length === 0" class="no-attendees">
+            <mat-icon>people_outline</mat-icon>
+            <p>No students have checked in yet.</p>
+          </div>
+
+          <table
+            *ngIf="attendees.length > 0"
+            mat-table
+            [dataSource]="attendees"
+            class="modern-table"
+          >
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let attendee">{{ attendee.name }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef>Email</th>
+              <td mat-cell *matCellDef="let attendee">{{ attendee.email }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="checkInTime">
+              <th mat-header-cell *matHeaderCellDef>Check-in Time</th>
+              <td mat-cell *matCellDef="let attendee">
+                {{
+                  attendee.checkInTime
+                    ? (attendee.checkInTime | date : "short")
+                    : "Not checked in"
+                }}
+              </td>
+            </ng-container>
+
+            <tr
+              mat-header-row
+              *matHeaderRowDef="['name', 'email', 'checkInTime']"
+            ></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: ['name', 'email', 'checkInTime']"
+            ></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

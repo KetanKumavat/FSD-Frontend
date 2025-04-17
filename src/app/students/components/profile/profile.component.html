@@ -1,94 +1,156 @@
-<div class="profile-container">
-  <div class="profile-header">
-    <h1>My Profile</h1>
+<div class="student-page profile-page">
+  <div class="page-header">
+    <h1 class="page-title">My Profile</h1>
+    <p class="page-subtitle">Manage your personal information</p>
   </div>
 
   <div *ngIf="loading" class="loading-container">
-    <mat-spinner></mat-spinner>
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading your profile...</p>
   </div>
 
-  <div *ngIf="!loading && !currentUser" class="not-found">
+  <div *ngIf="!loading && !currentUser" class="empty-state">
+    <mat-icon>person_off</mat-icon>
     <p>Unable to load user profile. Please try logging in again.</p>
+    <button mat-raised-button color="primary" routerLink="/auth/login">
+      Log In
+    </button>
   </div>
 
   <div *ngIf="!loading && currentUser" class="profile-content">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Account Information</mat-card-title>
-        <mat-card-subtitle>Update your personal details</mat-card-subtitle>
-      </mat-card-header>
+    <div class="profile-grid">
+      <div class="profile-main">
+        <mat-card>
+          <mat-card-header>
+            <div class="profile-avatar">
+              <div class="avatar-circle">
+                {{ currentUser?.name?.charAt(0) || "S" }}
+              </div>
+            </div>
+            <mat-card-title>Personal Information</mat-card-title>
+            <mat-card-subtitle>Update your account details</mat-card-subtitle>
+          </mat-card-header>
 
-      <mat-card-content>
-        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Username</mat-label>
-              <input matInput [value]="currentUser?.username" disabled />
-              <mat-hint>Username cannot be changed</mat-hint>
-            </mat-form-field>
-          </div>
+          <mat-card-content>
+            <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Username</mat-label>
+                  <input matInput [value]="currentUser?.username" disabled />
+                  <mat-hint>Username cannot be changed</mat-hint>
+                </mat-form-field>
+              </div>
 
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Role</mat-label>
-              <input matInput [value]="currentUser?.role" disabled />
-            </mat-form-field>
-          </div>
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Role</mat-label>
+                  <input matInput [value]="currentUser?.role" disabled />
+                </mat-form-field>
+              </div>
 
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Full Name</mat-label>
-              <input
-                matInput
-                formControlName="name"
-                placeholder="Enter your full name"
-              />
-              <mat-error
-                *ngIf="profileForm.controls['name'].hasError('required')"
-              >
-                Name is required
-              </mat-error>
-            </mat-form-field>
-          </div>
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Full Name</mat-label>
+                  <input
+                    matInput
+                    formControlName="name"
+                    placeholder="Enter your full name"
+                  />
+                  <mat-error
+                    *ngIf="profileForm.controls['name'].hasError('required')"
+                  >
+                    Name is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
 
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Email</mat-label>
-              <input
-                matInput
-                formControlName="email"
-                placeholder="Enter your email"
-              />
-              <mat-error
-                *ngIf="profileForm.controls['email'].hasError('required')"
-              >
-                Email is required
-              </mat-error>
-              <mat-error
-                *ngIf="profileForm.controls['email'].hasError('email')"
-              >
-                Please enter a valid email address
-              </mat-error>
-            </mat-form-field>
-          </div>
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Email</mat-label>
+                  <input
+                    matInput
+                    formControlName="email"
+                    placeholder="Enter your email"
+                  />
+                  <mat-error
+                    *ngIf="profileForm.controls['email'].hasError('required')"
+                  >
+                    Email is required
+                  </mat-error>
+                  <mat-error
+                    *ngIf="profileForm.controls['email'].hasError('email')"
+                  >
+                    Please enter a valid email address
+                  </mat-error>
+                </mat-form-field>
+              </div>
 
-          <div class="form-actions">
-            <button
-              mat-raised-button
-              color="primary"
-              type="submit"
-              [disabled]="profileForm.invalid || saving"
-            >
-              <mat-spinner
-                diameter="20"
-                *ngIf="saving"
-                class="spinner"
-              ></mat-spinner>
-              <span *ngIf="!saving">Save Changes</span>
+              <div class="form-actions">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  type="submit"
+                  [disabled]="profileForm.invalid || saving"
+                >
+                  <mat-spinner
+                    diameter="20"
+                    *ngIf="saving"
+                    class="spinner"
+                  ></mat-spinner>
+                  <span *ngIf="!saving">Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="profile-sidebar">
+        <mat-card class="account-card">
+          <mat-card-header>
+            <mat-card-title>Account Information</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-list">
+              <div class="info-item">
+                <span class="info-label">Department</span>
+                <span class="info-value">Computer Science</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Student ID</span>
+                <span class="info-value">{{
+                  currentUser?.id || "Not available"
+                }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Joined On</span>
+                <span class="info-value">April 10, 2025</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Status</span>
+                <span class="info-value">
+                  <span class="badge badge-accent">Active</span>
+                </span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="password-card">
+          <mat-card-header>
+            <mat-card-title>Security</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Change your password or update security settings</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-stroked-button color="primary">
+              <mat-icon>lock</mat-icon>
+              Change Password
             </button>
-          </div>
-        </form>
-      </mat-card-content>
-    </mat-card>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
   </div>
 </div>

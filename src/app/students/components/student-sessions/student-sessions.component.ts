@@ -36,6 +36,17 @@ export class StudentSessionsComponent implements OnInit {
 
   ngOnInit(): void {
     // Load student profile first, then use their department ID
+    const token = localStorage.getItem('auth_token');
+    console.log('Current token exists:', !!token);
+
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        console.log('Token payload:', payload);
+      } catch (e) {
+        console.error('Error parsing token:', e);
+      }
+    }
     this.loadStudentProfile();
   }
 

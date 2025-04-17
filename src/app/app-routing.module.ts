@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './auth/guards/auth.guard';
+import { StudentCheckInComponent } from './students/components/student-check-in/student-check-in.component';
 
 const routes: Routes = [
   {
@@ -35,6 +36,10 @@ const routes: Routes = [
     path: '',
     redirectTo: 'auth/login',
     pathMatch: 'full',
+  },
+  {
+    path: 'check-in/:id',
+    component: StudentCheckInComponent,
   },
 ];
 
