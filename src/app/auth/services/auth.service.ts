@@ -19,14 +19,17 @@ export class AuthService {
   }
 
   setRedirectUrl(url: string): void {
+    console.log('AuthService: Saving redirect URL:', url);
     this.redirectUrl = url;
   }
 
   getRedirectUrl(): string {
+    console.log('AuthService: Getting redirect URL:', this.redirectUrl);
     return this.redirectUrl;
   }
 
   clearRedirectUrl(): void {
+    console.log('AuthService: Clearing redirect URL');
     this.redirectUrl = '';
   }
 

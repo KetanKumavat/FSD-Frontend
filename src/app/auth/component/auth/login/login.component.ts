@@ -41,23 +41,34 @@ export class LoginComponent implements OnInit {
 
     this.loading = true;
     const { email, password } = this.loginForm.value;
+    console.log('Login: Attempting login for', email);
 
     this.authService.login(email, password).subscribe({
-      next: () => {
-        // Check if there's a redirect URL from a QR code scan
+      next: (response) => {
+        console.log('Login: Successfully logged in');
+
+        // Important: Retrieve the redirect URL immediately
         const redirectUrl = this.authService.getRedirectUrl();
-        if (redirectUrl) {
-          // Clear the saved URL first
+        console.log('Login: Saved redirect URL is:', redirectUrl);
+
+        if (redirectUrl && redirectUrl.trim() !== '') {
+          console.log('Login: Redirecting to saved URL:', redirectUrl);
+          // Clear the redirect URL before navigation to prevent loops
           this.authService.clearRedirectUrl();
-          // Navigate to the saved URL (from QR code)
-          this.router.navigateByUrl(redirectUrl);
+          // Use timeout to ensure route change happens after auth processing
+          setTimeout(() => {
+            this.router.navigateByUrl(redirectUrl);
+          }, 100);
         } else {
-          // Default role-based navigation if no redirect URL
+          console.log(
+            'Login: No redirect URL found, using role-based navigation'
+          );
           this.redirectBasedOnRole();
         }
       },
       error: (error) => {
-        this.errorMessage = error.error.message || 'Failed to login';
+        console.error('Login: Error during login:', error);
+        this.errorMessage = error.error?.message || 'Failed to login';
         this.loading = false;
       },
     });
