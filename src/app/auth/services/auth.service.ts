@@ -12,9 +12,22 @@ export class AuthService {
   private apiUrl = 'https://orientation-app.onrender.com/auth';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  private redirectUrl = '';
 
   constructor(private http: HttpClient, private router: Router) {
     this.loadUserFromStorage();
+  }
+
+  setRedirectUrl(url: string): void {
+    this.redirectUrl = url;
+  }
+
+  getRedirectUrl(): string {
+    return this.redirectUrl;
+  }
+
+  clearRedirectUrl(): void {
+    this.redirectUrl = '';
   }
 
   private loadUserFromStorage(): void {

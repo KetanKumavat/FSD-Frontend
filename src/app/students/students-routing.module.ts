@@ -7,6 +7,7 @@ import { SessionDetailsComponent } from './components/session-details/session-de
 import { ProfileComponent } from './components/profile/profile.component';
 import { DepartmentOrientationsComponent } from './components/department-orientations/department-orientations.component';
 import { OrientationRegistrationComponent } from './components/orientation-registration/orientation-registration.component';
+import { StudentCheckInComponent } from './components/student-check-in/student-check-in.component';
 
 const routes: Routes = [
   {
@@ -20,6 +21,7 @@ const routes: Routes = [
       { path: 'departments', component: DepartmentOrientationsComponent },
       { path: 'register', component: OrientationRegistrationComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'check-in/:sessionId', component: StudentCheckInComponent },
     ],
   },
 ];

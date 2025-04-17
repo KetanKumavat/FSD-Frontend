@@ -1,126 +1,165 @@
-<div class="student-page check-in-page">
-  <div class="check-in-container">
-    <div class="header-area">
-      <h1 class="page-title">Orientation Session Check-In</h1>
+<div class="student-page">
+  <div class="page-header">
+    <h1 class="page-title">Session Check-In</h1>
+    <p class="page-subtitle">
+      Scan the QR code or enter your details to check in
+    </p>
+  </div>
+
+  <ng-container *ngIf="loading">
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading session information...</p>
     </div>
+  </ng-container>
 
-    <mat-card class="check-in-card">
-      <!-- Loading State -->
-      <div *ngIf="loading" class="loading-container">
-        <mat-spinner diameter="40"></mat-spinner>
-        <p>Loading session details...</p>
-      </div>
-
-      <!-- Error State -->
-      <div *ngIf="error && !loading" class="error-state">
-        <mat-icon color="warn">error_outline</mat-icon>
-        <h3>Error</h3>
-        <p>{{ error }}</p>
+  <ng-container *ngIf="error">
+    <mat-card class="error-card">
+      <mat-card-content class="error-content">
+        <mat-icon color="warn">error</mat-icon>
+        <h2>{{ errorTitle }}</h2>
+        <p>{{ errorMessage }}</p>
         <button
-          mat-flat-button
+          mat-raised-button
           color="primary"
-          routerLink="/students/dashboard"
+          routerLink="/student/sessions"
         >
-          Back to Dashboard
+          Browse All Sessions
         </button>
-      </div>
+      </mat-card-content>
+    </mat-card>
+  </ng-container>
 
-      <!-- Session Details + Check-in Form -->
-      <div *ngIf="!loading && !error && sessionDetails && !success">
-        <mat-card-header>
-          <mat-card-title>{{ sessionDetails.title }}</mat-card-title>
-          <mat-card-subtitle>
-            {{ sessionDetails.department?.name }}
-          </mat-card-subtitle>
-        </mat-card-header>
-
-        <mat-card-content>
-          <div class="session-info">
-            <div class="info-item">
-              <mat-icon>calendar_today</mat-icon>
-              <span>{{ sessionDetails.startTime | date : "fullDate" }}</span>
-            </div>
-            <div class="info-item">
-              <mat-icon>access_time</mat-icon>
-              <span>{{ sessionDetails.startTime | date : "shortTime" }}</span>
-            </div>
-            <div class="info-item">
-              <mat-icon>location_on</mat-icon>
-              <span>{{ sessionDetails.location || "Not specified" }}</span>
-            </div>
-            <div class="info-item">
-              <mat-icon>person</mat-icon>
-              <span>{{ sessionDetails.faculty || "Not specified" }}</span>
-            </div>
+  <div class="check-in-container" *ngIf="!loading && !error && session">
+    <!-- Session Information Card -->
+    <mat-card class="session-info-card">
+      <mat-card-content>
+        <h2>{{ session.title }}</h2>
+        <div class="session-details">
+          <div class="detail-row">
+            <mat-icon>event</mat-icon>
+            <span>{{ session.date | date : "fullDate" }}</span>
           </div>
+          <div class="detail-row">
+            <mat-icon>access_time</mat-icon>
+            <span
+              >{{ session.startTime }} -
+              {{ session.endTime || "End time TBA" }}</span
+            >
+          </div>
+          <div class="detail-row">
+            <mat-icon>place</mat-icon>
+            <span>{{ session.location }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
 
-          <div class="check-in-form">
-            <h3>Enter your credentials to check in</h3>
-
-            <form (ngSubmit)="onSubmit()">
-              <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Email</mat-label>
-                <input
-                  matInput
-                  type="email"
-                  [(ngModel)]="email"
-                  name="email"
-                  required
-                  placeholder="Enter your email"
-                />
-                <mat-icon matSuffix>email</mat-icon>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Password</mat-label>
-                <input
-                  matInput
-                  type="password"
-                  [(ngModel)]="password"
-                  name="password"
-                  required
-                  placeholder="Enter your password"
-                />
-                <mat-icon matSuffix>lock</mat-icon>
-              </mat-form-field>
-
-              <div *ngIf="error" class="error-message">
-                {{ error }}
-              </div>
-
-              <button
-                mat-flat-button
-                color="primary"
-                type="submit"
-                class="check-in-button"
-                [disabled]="submitting"
+    <!-- Check-in Form -->
+    <mat-card class="form-card" *ngIf="!checkInComplete">
+      <mat-card-header>
+        <mat-card-title>Please fill in your details to check in</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="checkInForm" (ngSubmit)="submitCheckIn()">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>First Name</mat-label>
+              <input
+                matInput
+                formControlName="firstName"
+                placeholder="Your first name"
+              />
+              <mat-error
+                *ngIf="checkInForm.controls['firstName'].hasError('required')"
               >
-                <mat-spinner
-                  *ngIf="submitting"
-                  diameter="20"
-                  class="spinner"
-                ></mat-spinner>
-                <span *ngIf="!submitting">Check In</span>
-              </button>
-            </form>
-          </div>
-        </mat-card-content>
-      </div>
+                First name is required
+              </mat-error>
+            </mat-form-field>
 
-      <!-- Success State -->
-      <div *ngIf="success" class="success-state">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Last Name</mat-label>
+              <input
+                matInput
+                formControlName="lastName"
+                placeholder="Your last name"
+              />
+              <mat-error
+                *ngIf="checkInForm.controls['lastName'].hasError('required')"
+              >
+                Last name is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email Address</mat-label>
+            <input
+              matInput
+              formControlName="email"
+              placeholder="your.email@example.com"
+              type="email"
+            />
+            <mat-error
+              *ngIf="checkInForm.controls['email'].hasError('required')"
+            >
+              Email is required
+            </mat-error>
+            <mat-error *ngIf="checkInForm.controls['email'].hasError('email')">
+              Please enter a valid email address
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Student ID</mat-label>
+            <input
+              matInput
+              formControlName="studentId"
+              placeholder="Your student ID"
+            />
+            <mat-error
+              *ngIf="checkInForm.controls['studentId'].hasError('required')"
+            >
+              Student ID is required
+            </mat-error>
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-button type="button" routerLink="/student/sessions">
+              Cancel
+            </button>
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="checkInForm.invalid || submitting"
+            >
+              <mat-spinner
+                diameter="20"
+                *ngIf="submitting"
+                class="button-spinner"
+              ></mat-spinner>
+              Check In
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Success Message -->
+    <mat-card class="success-card" *ngIf="checkInComplete">
+      <mat-card-content class="success-content">
         <mat-icon color="primary">check_circle</mat-icon>
-        <h2>Check-In Successful!</h2>
-        <p>{{ successMessage }}</p>
-        <p class="session-name">{{ sessionDetails?.title }}</p>
+        <h2>Check-in Successful!</h2>
+        <p>You have successfully checked in to {{ session.title }}.</p>
         <button
-          mat-flat-button
+          mat-raised-button
           color="primary"
-          routerLink="/students/dashboard"
+          routerLink="/student/dashboard"
         >
           Return to Dashboard
         </button>
-      </div>
+      </mat-card-content>
     </mat-card>
   </div>
 </div>

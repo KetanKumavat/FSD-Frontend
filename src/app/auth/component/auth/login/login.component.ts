@@ -44,7 +44,17 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(email, password).subscribe({
       next: () => {
-        this.redirectBasedOnRole();
+        // Check if there's a redirect URL from a QR code scan
+        const redirectUrl = this.authService.getRedirectUrl();
+        if (redirectUrl) {
+          // Clear the saved URL first
+          this.authService.clearRedirectUrl();
+          // Navigate to the saved URL (from QR code)
+          this.router.navigateByUrl(redirectUrl);
+        } else {
+          // Default role-based navigation if no redirect URL
+          this.redirectBasedOnRole();
+        }
       },
       error: (error) => {
         this.errorMessage = error.error.message || 'Failed to login';
@@ -56,9 +66,13 @@ export class LoginComponent implements OnInit {
   private redirectBasedOnRole(): void {
     const user = this.authService.getCurrentUser();
     if (user?.role === UserRole.ADMIN) {
-      this.router.navigate(['/admins/dashboard']);
+      this.router.navigate(['/admin/dashboard']); // Change from /admins/dashboard
     } else {
-      this.router.navigate(['/students/dashboard']);
+      this.router.navigate(['/student/dashboard']); // Change from /students/dashboard
     }
+
+    // Add debugging to verify role and navigation
+    console.log('Redirecting user with role:', user?.role);
+    console.log('Current user data:', user);
   }
 }

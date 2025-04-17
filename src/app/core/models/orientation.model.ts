@@ -25,7 +25,7 @@ export interface OrientationSession {
   faculty?: string;
   attendees?: Student[];
   capacity: number;
-  registeredCount?: number;
+  registeredCount: number;
   startTime?: string;
   endTime?: string;
   description?: string;

@@ -24,7 +24,9 @@
         <mat-icon>arrow_back</mat-icon>
       </button>
       <div class="header-content">
-        <h1 class="page-title">{{ session.title }}</h1>
+        <h1 class="page-title">
+          {{ session.title || "Orientation Session " + session.orientationID }}
+        </h1>
         <p class="department-name">{{ getDepartmentName() }}</p>
         <span class="value">{{ getFacultyName() }}</span>
 
@@ -166,14 +168,17 @@
               <div class="capacity-label">
                 <span>Registration</span>
                 <span
-                  >{{ session.registeredCount }} / {{ session.capacity }}</span
+                  >{{ session.registeredCount || 0 }} /
+                  {{ session.capacity || 30 }}</span
                 >
               </div>
               <div class="capacity-bar">
                 <div
                   class="capacity-progress"
                   [style.width.%]="
-                    (session.registeredCount / session.capacity) * 100
+                    ((session.registeredCount || 0) /
+                      (session.capacity || 30)) *
+                    100
                   "
                   [ngClass]="{
                     low: session.registeredCount / session.capacity < 0.5,

@@ -1,11 +1,11 @@
-import { Component, type OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   SessionService,
   OrientationAttendee,
-  OrientationSession as ServiceOrientationSession,
 } from '../../../auth/services/session.service';
+import { OrientationSession } from '../../../core/models/orientation.model';
 import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
@@ -16,8 +16,8 @@ import { AuthService } from '../../../auth/services/auth.service';
 })
 export class SessionDetailsComponent implements OnInit {
   sessionId!: number;
-  session: ServiceOrientationSession | undefined;
-  attendees: OrientationAttendee[] = [];
+  session: OrientationSession | any;
+  attendees: any[] = [];
   loading = true;
   isAdmin = false;
   isStudent = false;
@@ -42,19 +42,75 @@ export class SessionDetailsComponent implements OnInit {
     });
   }
 
+  // Add these methods to your component
+
+  loadAttendees(): void {
+    this.sessionService.getSessionAttendees(this.sessionId).subscribe({
+      next: (attendees) => {
+        this.attendees = attendees;
+        // If student view, check registration status
+        if (this.isStudent) {
+          this.checkRegistrationStatusFromAttendees();
+        }
+      },
+      error: (error) => {
+        console.error('Error loading attendees:', error);
+        this.snackBar.open('Error loading attendee information', 'Close', {
+          duration: 3000,
+        });
+      },
+    });
+  }
+
+  checkRegistrationStatus(): void {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      this.isRegistered = false;
+      return;
+    }
+
+    this.sessionService.getRegisteredSessions(currentUser.id).subscribe({
+      next: (sessions) => {
+        // Check if any returned session matches our current session ID
+        this.isRegistered = sessions.some(
+          (s) =>
+            // Check different ID formats from API
+            s.id === this.sessionId || s.orientationID === this.sessionId
+        );
+      },
+      error: (error) => {
+        console.error('Error checking registration status:', error);
+        this.isRegistered = false;
+      },
+    });
+  }
+
   loadSessionDetails(): void {
     this.sessionService.getSessionById(this.sessionId).subscribe({
       next: (session) => {
         this.session = session;
 
-        // If admin, load attendees
-        if (this.isAdmin) {
+        // Calculate registeredCount from attendees if needed
+        if (session.attendees && !session.registeredCount) {
+          this.session.registeredCount = session.attendees.length;
+        }
+
+        // Set default capacity if not provided
+        if (!session.capacity) {
+          this.session.capacity = 30; // Default capacity
+        }
+
+        // Check for attendees in the response
+        if (session.attendees) {
+          this.attendees = session.attendees;
+          this.checkRegistrationStatusFromAttendees();
+        } else if (this.isAdmin) {
           this.loadAttendees();
         } else if (this.isStudent) {
           this.checkRegistrationStatus();
-        } else {
-          this.loading = false;
         }
+
+        this.loading = false;
       },
       error: (error) => {
         this.snackBar.open(
@@ -67,37 +123,16 @@ export class SessionDetailsComponent implements OnInit {
     });
   }
 
-  loadAttendees(): void {
-    this.sessionService.getSessionAttendees(this.sessionId).subscribe({
-      next: (attendees) => {
-        this.attendees = attendees;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.snackBar.open(
-          'Error loading attendees: ' + error.message,
-          'Close',
-          { duration: 3000 }
-        );
-        this.loading = false;
-      },
-    });
-  }
-
-  checkRegistrationStatus(): void {
+  // New method to check if current user is in the attendees list
+  checkRegistrationStatusFromAttendees(): void {
     const currentUser = this.authService.getCurrentUser();
-    if (currentUser) {
-      this.sessionService.getRegisteredSessions(currentUser.id).subscribe({
-        next: (sessions) => {
-          this.isRegistered = sessions.some((s) => s.id === this.sessionId);
-          this.loading = false;
-        },
-        error: () => {
-          this.loading = false;
-        },
-      });
-    } else {
-      this.loading = false;
+    if (currentUser && this.attendees && this.attendees.length > 0) {
+      // Check if the current user's email matches any attendee's email
+      this.isRegistered = this.attendees.some(
+        (attendee) =>
+          (attendee.user && attendee.user.email === currentUser.email) ||
+          attendee.userEmail === currentUser.email
+      );
     }
   }
 
@@ -182,8 +217,24 @@ export class SessionDetailsComponent implements OnInit {
     }
   }
 
+  // In session-details.component.ts
   getDepartmentName(): string {
     if (!this.session) return 'Unknown Department';
+
+    // Handle different response structures
+    if (
+      this.session.attendees &&
+      this.session.attendees.length > 0 &&
+      this.session.attendees[0].department
+    ) {
+      if (typeof this.session.attendees[0].department === 'object') {
+        return (
+          this.session.attendees[0].department.departmentName ||
+          'Unknown Department'
+        );
+      }
+    }
+
     return (
       this.session.department?.name ||
       this.session.department?.departmentName ||

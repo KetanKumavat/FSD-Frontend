@@ -1,140 +1,172 @@
-@import "../../theme/student-theme.css";
-
-.check-in-page {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 0 20px;
+.student-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px 16px;
 }
 
-.check-in-container {
-  animation: fadeIn 0.5s ease;
-}
-
-.header-area {
-  text-align: center;
+.page-header {
   margin-bottom: 24px;
+  text-align: center;
 }
 
-.check-in-card {
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  padding: 24px;
+.page-title {
+  font-size: 28px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-dark);
 }
 
-.session-info {
-  background-color: var(--gray-50);
-  border-radius: var(--radius-md);
-  padding: 20px;
-  margin: 16px 0 24px;
+.page-subtitle {
+  color: var(--text-light);
+  font-size: 16px;
 }
 
-.info-item {
+/* Loading state */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+}
+
+.loading-container p {
+  margin-top: 16px;
+  color: var(--gray-600);
+}
+
+/* Check-in container */
+.check-in-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Session info card */
+.session-info-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.session-info-card h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  color: var(--text-dark);
+}
+
+.session-details {
+  margin-top: 16px;
+}
+
+.detail-row {
   display: flex;
   align-items: center;
   margin-bottom: 12px;
 }
 
-.info-item:last-child {
-  margin-bottom: 0;
-}
-
-.info-item mat-icon {
+.detail-row mat-icon {
+  color: var(--primary-color);
   margin-right: 12px;
-  color: var(--primary);
 }
 
-.check-in-form {
-  margin-top: 32px;
+/* Form card */
+.form-card {
+  border-radius: 12px;
 }
 
-.check-in-form h3 {
-  font-size: 18px;
-  font-weight: 500;
-  margin-bottom: 24px;
-  color: var(--dark);
-}
-
-.form-field {
+.full-width {
   width: 100%;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+mat-form-field {
+  margin-bottom: 8px;
+}
+
+/* Success card */
+.success-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.success-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px;
+}
+
+.success-content mat-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  color: var(--success-color);
   margin-bottom: 16px;
 }
 
-.check-in-button {
-  width: 100%;
-  height: 48px;
-  margin-top: 16px;
+.success-content h2 {
+  font-size: 24px;
   font-weight: 500;
-  border-radius: 8px;
+  margin-bottom: 16px;
+  color: var(--text-dark);
 }
 
-.error-message {
-  background-color: rgba(244, 67, 54, 0.1);
-  color: #f44336;
-  padding: 16px;
-  border-radius: 8px;
-  margin: 16px 0;
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
 }
 
-.spinner {
+.button-spinner {
   display: inline-block;
   margin-right: 8px;
 }
 
-.error-state,
-.success-state {
+.error-card {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.error-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
-  padding: 40px 20px;
+  padding: 32px;
 }
 
-.error-state mat-icon,
-.success-state mat-icon {
-  font-size: 64px;
-  height: 64px;
-  width: 64px;
-  margin-bottom: 24px;
-}
-
-.error-state h3,
-.success-state h2 {
+.error-content mat-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
   margin-bottom: 16px;
-  color: var(--dark);
 }
 
-.error-state p,
-.success-state p {
-  margin-bottom: 24px;
-  color: var(--gray-600);
-  max-width: 400px;
-}
-
-.session-name {
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--primary);
-  margin-bottom: 24px;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (max-width: 480px) {
-  .check-in-page {
-    margin: 20px auto;
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
   }
 
-  .check-in-card {
-    padding: 16px;
+  .session-info-card,
+  .form-card,
+  .success-card,
+  .error-card {
+    border-radius: 8px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .student-page {
+    padding: 16px 12px;
   }
 }

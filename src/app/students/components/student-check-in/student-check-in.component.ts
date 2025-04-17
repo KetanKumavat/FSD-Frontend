@@ -1,117 +1,169 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { OrientationService } from '../../../admins/services/orientation.service';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { SessionService } from '../../../auth/services/session.service';
+import { AuthService } from '../../../auth/services/auth.service';
+import { StudentService } from '../../services/student.service';
+import { OrientationSession } from '../../../core/models/orientation.model';
+import { Student } from '../../../core/models/student.model';
 
 @Component({
   selector: 'app-student-check-in',
-  templateUrl: './student-check-in.component.html',
-  styleUrls: ['./student-check-in.component.css'],
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
     MatCardModule,
-    MatButtonModule,
-    MatInputModule,
-    MatFormFieldModule,
     MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatProgressSpinnerModule,
-    FormsModule,
+    ReactiveFormsModule,
   ],
+  templateUrl: './student-check-in.component.html',
+  styleUrls: ['./student-check-in.component.css'],
 })
 export class StudentCheckInComponent implements OnInit {
-  sessionId: number | null = null;
-  sessionDetails: any = null;
-  loading = true;
-  submitting = false;
-  error: string | null = null;
-  success = false;
-  successMessage = '';
+  sessionId: number = 0;
+  session: OrientationSession | null = null;
+  loading: boolean = true;
+  error: boolean = false;
+  errorTitle: string = '';
+  errorMessage: string = '';
 
-  // Form fields
-  email: string = '';
-  password: string = '';
+  checkInForm: FormGroup;
+  submitting: boolean = false;
+  checkInComplete: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient,
-    private orientationService: OrientationService
-  ) {}
+    private sessionService: SessionService,
+    private authService: AuthService,
+    private studentService: StudentService,
+    private fb: FormBuilder
+  ) {
+    this.checkInForm = this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      studentId: ['', Validators.required],
+    });
+  }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params) => {
-      const id = params.get('id');
-      if (id) {
-        this.sessionId = +id;
+    this.route.params.subscribe((params) => {
+      if (params['id']) {
+        this.sessionId = +params['id'];
         this.loadSessionDetails();
+        this.loadUserInfo();
       } else {
-        this.error = 'Session ID not found in URL';
-        this.loading = false;
+        this.handleError('Invalid Session', 'No session ID provided.');
       }
     });
   }
 
+  // In the loadSessionDetails method:
   loadSessionDetails(): void {
-    if (!this.sessionId) return;
-
-    this.orientationService.getSessionById(this.sessionId).subscribe({
-      next: (data) => {
-        this.sessionDetails = data;
+    this.loading = true;
+    this.sessionService.getSessionById(this.sessionId).subscribe({
+      next: (sessionData) => {
+        // Fix type assignment with non-null assertion or conditional
+        this.session = sessionData || null;
         this.loading = false;
       },
       error: (err) => {
-        console.error('Error loading session details:', err);
-        this.error = `Failed to load session details: ${
-          err.message || 'Unknown error'
-        }`;
-        this.loading = false;
+        console.error('Failed to load session:', err);
+        this.handleError(
+          'Session Not Found',
+          'Unable to load the session details. The session may not exist or has been cancelled.'
+        );
       },
     });
   }
 
-  onSubmit(): void {
-    this.submitting = true;
-    this.error = null;
+  // Replace getStudentProfile with getCurrentStudentProfile
+  loadUserInfo(): void {
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.studentService.getCurrentStudentProfile().subscribe({
+        next: (profile: any) => {
+          // Pre-fill the form with user info
+          this.checkInForm.patchValue({
+            firstName: profile.firstName || (user as any).firstName || '',
+            lastName: profile.lastName || (user as any).lastName || '',
+            email: profile.email || (user as any).email || '',
+            studentId: profile.studentId || user.id || '',
+          });
+        },
+        error: () => {
+          // Just use what we have from current user
+          if (user.name) {
+            const nameParts = user.name.split(' ');
+            const firstName = nameParts[0] || '';
+            const lastName = nameParts.length > 1 ? nameParts[1] : '';
 
-    // Validate inputs
-    if (!this.email || !this.password) {
-      this.error = 'Please enter both email and password';
-      this.submitting = false;
+            this.checkInForm.patchValue({
+              firstName,
+              lastName,
+              email: (user as any).email || '',
+              studentId: user.id || '',
+            });
+          }
+        },
+      });
+    }
+  }
+
+  submitCheckIn(): void {
+    if (this.checkInForm.invalid) {
       return;
     }
 
-    const apiUrl = `https://orientation-app.onrender.com/orientations/public/sessions/${this.sessionId}/student-check-in`;
+    this.submitting = true;
+    const formData = this.checkInForm.value;
 
-    this.http
-      .post(apiUrl, {
-        email: this.email,
-        password: this.password,
-      })
+    this.sessionService
+      .checkInToSession(
+        this.sessionId,
+        formData.studentId,
+        `${formData.firstName} ${formData.lastName}`,
+        formData.email
+      )
       .subscribe({
-        next: (response: any) => {
-          this.success = true;
-          this.successMessage = response.message || 'Check-in successful!';
+        next: () => {
+          this.checkInComplete = true;
           this.submitting = false;
-
-          // Reset form
-          this.email = '';
-          this.password = '';
         },
         error: (err) => {
           console.error('Check-in failed:', err);
-          this.error =
-            err.error?.message || 'Check-in failed. Please try again.';
           this.submitting = false;
+          this.handleError(
+            'Check-in Failed',
+            err.error?.message ||
+              'Unable to complete check-in. Please try again or contact support.'
+          );
         },
       });
+  }
+
+  handleError(title: string, message: string): void {
+    this.error = true;
+    this.errorTitle = title;
+    this.errorMessage = message;
+    this.loading = false;
   }
 }
