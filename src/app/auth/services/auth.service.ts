@@ -9,7 +9,7 @@ import { User, UserRole, AuthResponse } from '../../core/models/user.model';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/auth';
+  private apiUrl = 'https://orientation-app.onrender.com/auth';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 

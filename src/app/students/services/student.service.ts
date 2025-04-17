@@ -8,7 +8,7 @@ import { OrientationSession } from '../../core/models/orientation.model';
   providedIn: 'root',
 })
 export class StudentService {
-  private apiUrl = 'http://localhost:8080/students';
+  private apiUrl = 'https://orientation-app.onrender.com/students';
 
   constructor(private http: HttpClient) {}
 

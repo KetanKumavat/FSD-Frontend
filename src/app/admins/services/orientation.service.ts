@@ -13,7 +13,7 @@ import { catchError, map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class OrientationService {
-  private apiUrl = 'http://localhost:8080/orientations';
+  private apiUrl = 'https://orientation-app.onrender.com/orientations';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

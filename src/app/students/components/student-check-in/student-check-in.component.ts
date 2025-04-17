@@ -89,7 +89,7 @@ export class StudentCheckInComponent implements OnInit {
       return;
     }
 
-    const apiUrl = `http://localhost:8080/orientations/public/sessions/${this.sessionId}/student-check-in`;
+    const apiUrl = `https://orientation-app.onrender.com/orientations/public/sessions/${this.sessionId}/student-check-in`;
 
     this.http
       .post(apiUrl, {
