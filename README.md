@@ -1,59 +1,100 @@
-# UserProject
+# Orientation Session Manager - Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.5.
+A modern web application for managing university orientation sessions, attendance tracking, and student check-ins using QR codes.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- **User Authentication**: Secure login and registration system with role-based access control
+- **QR Code Check-in**: Scan QR codes to quickly check into orientation sessions
+- **Admin Dashboard**: Manage orientation sessions, track attendance, and generate reports
+- **Student Portal**: View upcoming orientation sessions and attendance history
+- **Mobile Responsive**: Fully responsive design works on desktop and mobile devices
+- **Real-time Updates**: Instant attendance tracking and session management
 
-```bash
-ng serve
+## Technologies Used
+
+- **Angular 17**: Frontend framework
+- **Angular Material**: UI component library
+- **RxJS**: Reactive programming
+- **TypeScript**: Static typing for robust code
+- **JWT Authentication**: Secure token-based authentication
+- **Responsive Design**: Mobile-first approach
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v16+)
+- npm (v8+)
+- Angular CLI (`npm install -g @angular/cli`)
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/yourusername/orientation-app.git
+   cd orientation-app/frontend
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Start development server:
+
+   ```bash
+   npm start
+   ```
+
+4. Open your browser and navigate to `http://localhost:4200`
+
+## Project Structure
+
+```
+frontend/
+├── src/
+│   ├── app/
+│   │   ├── admin/             # Admin module
+│   │   ├── auth/              # Authentication module
+│   │   ├── core/              # Core services and models
+│   │   ├── shared/            # Shared components and utilities
+│   │   └── students/          # Student module
+│   ├── assets/                # Static assets
+│   └── environments/          # Environment configuration
+├── .env                       # Environment variables
+└── README.md                  # This file
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## User Roles
 
-## Code scaffolding
+- **Admin**: Create and manage orientation sessions, view attendance
+- **Student**: View and check-in to orientation sessions
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Screenshots
 
-```bash
-ng generate component component-name
-```
+### Student Dashboard
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+![Student Dashboard](./public/ss-2.png)
 
-```bash
-ng generate --help
-```
+### Admin Dashboard
 
-## Building
+![Admin Dashboard](./public/ss-1.png)
 
-To build the project run:
+### QR Code Scanning
 
-```bash
-ng build
-```
+![QR Scanning](./public/ss-3.png)
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### Session Check-in
 
-## Running unit tests
+![Student Checkin](./public/ss-4.png)
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Contributing
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
