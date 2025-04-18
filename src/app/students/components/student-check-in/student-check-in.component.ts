@@ -40,13 +40,15 @@ export class StudentCheckInComponent implements OnInit {
   sessionId: number = 0;
   session: OrientationSession | null = null;
   loading: boolean = true;
-  error: boolean = false;
+  errorOccurred: boolean = false;
   errorTitle: string = '';
   errorMessage: string = '';
 
   checkInForm: FormGroup;
   submitting: boolean = false;
   checkInComplete: boolean = false;
+  success: boolean = false;
+  successMessage: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -64,10 +66,59 @@ export class StudentCheckInComponent implements OnInit {
     });
   }
 
+  handleError(title: string, message: string): void {
+    this.errorOccurred = true;
+    this.errorTitle = title;
+    this.errorMessage = message;
+    this.loading = false;
+    this.submitting = false;
+  }
+
+  onSubmit() {
+    if (this.checkInForm.invalid) {
+      return;
+    }
+
+    this.loading = true;
+    this.errorOccurred = false;
+    this.errorTitle = '';
+    this.errorMessage = '';
+
+    this.sessionService
+      .checkInToSession(
+        this.sessionId,
+        this.checkInForm.value.studentId,
+        `${this.checkInForm.value.firstName} ${this.checkInForm.value.lastName}`,
+        this.checkInForm.value.email
+      )
+      .subscribe({
+        next: (response) => {
+          this.loading = false;
+          this.success = true;
+          this.successMessage = 'Successfully checked in to the session!';
+        },
+        error: (error) => {
+          this.loading = false;
+
+          let errorMsg = 'Failed to check in to the session';
+          if (error.error && typeof error.error === 'object') {
+            errorMsg = error.error.message || errorMsg;
+          } else if (typeof error.error === 'string') {
+            errorMsg = error.error;
+          } else if (error.message) {
+            errorMsg = error.message;
+          }
+
+          this.handleError('Check-in Failed', errorMsg);
+          console.error('Check-in error:', error);
+        },
+      });
+  }
+
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      if (params['id']) {
-        this.sessionId = +params['id'];
+      if (params['sessionId']) {
+        this.sessionId = +params['sessionId'];
         this.loadSessionDetails();
         this.loadUserInfo();
       } else {
@@ -76,13 +127,21 @@ export class StudentCheckInComponent implements OnInit {
     });
   }
 
-  // In the loadSessionDetails method:
   loadSessionDetails(): void {
     this.loading = true;
     this.sessionService.getSessionById(this.sessionId).subscribe({
       next: (sessionData) => {
-        // Fix type assignment with non-null assertion or conditional
-        this.session = sessionData || null;
+        this.session = {
+          ...sessionData,
+          title:
+            sessionData.title ||
+            `Orientation Session ${sessionData.orientationID}`,
+          startTime: sessionData.time,
+          date: new Date(),
+          location: sessionData.location || 'Campus Main Hall',
+          endTime: this.calculateEndTime(sessionData.time),
+          attendees: sessionData.attendees || [],
+        };
         this.loading = false;
       },
       error: (err) => {
@@ -95,7 +154,25 @@ export class StudentCheckInComponent implements OnInit {
     });
   }
 
-  // Replace getStudentProfile with getCurrentStudentProfile
+  private calculateEndTime(startTime: string): string {
+    if (!startTime) return '';
+
+    try {
+      const [hours, minutes] = startTime.split(':').map(Number);
+      let endHour = hours + 1;
+
+      if (endHour >= 24) {
+        endHour -= 24;
+      }
+
+      return `${endHour.toString().padStart(2, '0')}:${minutes
+        .toString()
+        .padStart(2, '0')}`;
+    } catch (e) {
+      return '';
+    }
+  }
+
   loadUserInfo(): void {
     const user = this.authService.getCurrentUser();
     if (user) {
@@ -106,7 +183,7 @@ export class StudentCheckInComponent implements OnInit {
             firstName: profile.firstName || (user as any).firstName || '',
             lastName: profile.lastName || (user as any).lastName || '',
             email: profile.email || (user as any).email || '',
-            studentId: profile.studentId || user.id || '',
+            studentId: profile.studentID || user.id || '',
           });
         },
         error: () => {
@@ -134,6 +211,7 @@ export class StudentCheckInComponent implements OnInit {
     }
 
     this.submitting = true;
+    this.errorOccurred = false;
     const formData = this.checkInForm.value;
 
     this.sessionService
@@ -150,20 +228,15 @@ export class StudentCheckInComponent implements OnInit {
         },
         error: (err) => {
           console.error('Check-in failed:', err);
-          this.submitting = false;
-          this.handleError(
-            'Check-in Failed',
-            err.error?.message ||
-              'Unable to complete check-in. Please try again or contact support.'
-          );
+
+          let errorMsg =
+            'Unable to complete check-in. Please try again or contact support.';
+          if (err.error && err.error.message) {
+            errorMsg = err.error.message;
+          }
+
+          this.handleError('Check-in Failed', errorMsg);
         },
       });
-  }
-
-  handleError(title: string, message: string): void {
-    this.error = true;
-    this.errorTitle = title;
-    this.errorMessage = message;
-    this.loading = false;
   }
 }

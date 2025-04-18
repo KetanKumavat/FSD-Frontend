@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Student } from '../../core/models/student.model';
 import { OrientationSession } from '../../core/models/orientation.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StudentService {
-  private apiUrl = 'https://orientation-app.onrender.com/students';
+  private apiUrl = `${environment.apiUrl}/students`;
 
   constructor(private http: HttpClient) {}
 

@@ -8,12 +8,13 @@ import {
 import { AuthService } from '../../auth/services/auth.service';
 import { HttpHeaders } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OrientationService {
-  private apiUrl = 'https://orientation-app.onrender.com/orientations';
+  private apiUrl = `${environment.apiUrl}/orientations`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

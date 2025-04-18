@@ -170,3 +170,25 @@ mat-form-field {
     padding: 16px 12px;
   }
 }
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  margin: 16px 0;
+  background-color: #ffebee;
+  border-radius: 4px;
+  color: #d32f2f;
+}
+
+.success-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  margin: 16px 0;
+  background-color: #e8f5e9;
+  border-radius: 4px;
+  color: #2e7d32;
+}

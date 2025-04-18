@@ -13,7 +13,7 @@
     </div>
   </ng-container>
 
-  <ng-container *ngIf="error">
+  <ng-container *ngIf="errorOccurred">
     <mat-card class="error-card">
       <mat-card-content class="error-content">
         <mat-icon color="warn">error</mat-icon>
@@ -30,7 +30,7 @@
     </mat-card>
   </ng-container>
 
-  <div class="check-in-container" *ngIf="!loading && !error && session">
+  <div class="check-in-container" *ngIf="!loading && !errorOccurred && session">
     <!-- Session Information Card -->
     <mat-card class="session-info-card">
       <mat-card-content>
@@ -38,18 +38,30 @@
         <div class="session-details">
           <div class="detail-row">
             <mat-icon>event</mat-icon>
-            <span>{{ session.date | date : "fullDate" }}</span>
+            <span>{{
+              session.date
+                ? (session.date | date : "fullDate")
+                : "Date not specified"
+            }}</span>
           </div>
           <div class="detail-row">
             <mat-icon>access_time</mat-icon>
-            <span
-              >{{ session.startTime }} -
-              {{ session.endTime || "End time TBA" }}</span
-            >
+            <span>
+              {{ session.startTime || "Time not specified" }}
+              {{ session.endTime ? "- " + session.endTime : "" }}
+            </span>
           </div>
           <div class="detail-row">
             <mat-icon>place</mat-icon>
-            <span>{{ session.location }}</span>
+            <span>{{ session.location || "Location not specified" }}</span>
+          </div>
+          <div class="detail-row">
+            <mat-icon>person</mat-icon>
+            <span>{{ session.facultyName || "Instructor not specified" }}</span>
+          </div>
+          <div class="detail-row">
+            <mat-icon>group</mat-icon>
+            <span>{{ session.attendees?.length || 0 }} attendees</span>
           </div>
         </div>
       </mat-card-content>
@@ -128,18 +140,28 @@
             <button mat-button type="button" routerLink="/student/sessions">
               Cancel
             </button>
+            <div *ngIf="errorOccurred" class="error-message">
+              <mat-icon>error_outline</mat-icon>
+              <h3>{{ errorTitle }}</h3>
+              <p>{{ errorMessage }}</p>
+            </div>
+
+            <div *ngIf="success" class="success-message">
+              <mat-icon>check_circle</mat-icon>
+              <p>{{ successMessage }}</p>
+            </div>
             <button
               mat-raised-button
               color="primary"
               type="submit"
               [disabled]="checkInForm.invalid || submitting"
             >
+              <span *ngIf="!submitting">Check In</span>
               <mat-spinner
-                diameter="20"
                 *ngIf="submitting"
+                diameter="20"
                 class="button-spinner"
               ></mat-spinner>
-              Check In
             </button>
           </div>
         </form>

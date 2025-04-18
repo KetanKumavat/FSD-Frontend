@@ -47,18 +47,15 @@ export class LoginComponent implements OnInit {
       next: (response) => {
         console.log('Login: Successfully logged in');
 
-        // Important: Retrieve the redirect URL immediately
         const redirectUrl = this.authService.getRedirectUrl();
-        console.log('Login: Saved redirect URL is:', redirectUrl);
+        console.log('Login: Redirect URL after login:', redirectUrl);
 
-        if (redirectUrl && redirectUrl.trim() !== '') {
-          console.log('Login: Redirecting to saved URL:', redirectUrl);
-          // Clear the redirect URL before navigation to prevent loops
+        this.loading = false;
+
+        if (redirectUrl && redirectUrl.trim().length > 0) {
+          console.log('Login: Using stored redirect URL');
+          this.router.navigateByUrl(redirectUrl);
           this.authService.clearRedirectUrl();
-          // Use timeout to ensure route change happens after auth processing
-          setTimeout(() => {
-            this.router.navigateByUrl(redirectUrl);
-          }, 100);
         } else {
           console.log(
             'Login: No redirect URL found, using role-based navigation'
@@ -77,13 +74,9 @@ export class LoginComponent implements OnInit {
   private redirectBasedOnRole(): void {
     const user = this.authService.getCurrentUser();
     if (user?.role === UserRole.ADMIN) {
-      this.router.navigate(['/admin/dashboard']); // Change from /admins/dashboard
+      this.router.navigate(['/admin/dashboard']);
     } else {
-      this.router.navigate(['/student/dashboard']); // Change from /students/dashboard
+      this.router.navigate(['/student/dashboard']);
     }
-
-    // Add debugging to verify role and navigation
-    console.log('Redirecting user with role:', user?.role);
-    console.log('Current user data:', user);
   }
 }

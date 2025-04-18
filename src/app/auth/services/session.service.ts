@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { OrientationSession } from '../../core/models/orientation.model';
 import { map } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
 
 export interface OrientationAttendee {
   id: number;
@@ -17,7 +18,7 @@ export interface OrientationAttendee {
   providedIn: 'root',
 })
 export class SessionService {
-  private apiUrl = 'https://orientation-app.onrender.com/orientations';
+  private apiUrl = `${environment.apiUrl}/orientations`;
 
   private sessions: OrientationSession[] = [
     {

@@ -4,12 +4,13 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User, UserRole, AuthResponse } from '../../core/models/user.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://orientation-app.onrender.com/auth';
+  private apiUrl = `${environment.apiUrl}/auth`;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private redirectUrl = '';
@@ -21,16 +22,19 @@ export class AuthService {
   setRedirectUrl(url: string): void {
     console.log('AuthService: Saving redirect URL:', url);
     this.redirectUrl = url;
+    localStorage.setItem('redirectUrl', url); // Also save to localStorage
   }
 
   getRedirectUrl(): string {
-    console.log('AuthService: Getting redirect URL:', this.redirectUrl);
-    return this.redirectUrl;
+    const savedUrl = localStorage.getItem('redirectUrl') || this.redirectUrl;
+    console.log('AuthService: Getting redirect URL:', savedUrl);
+    return savedUrl;
   }
 
   clearRedirectUrl(): void {
     console.log('AuthService: Clearing redirect URL');
     this.redirectUrl = '';
+    localStorage.removeItem('redirectUrl');
   }
 
   private loadUserFromStorage(): void {

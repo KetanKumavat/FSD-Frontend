@@ -37,10 +37,6 @@ const routes: Routes = [
     redirectTo: 'auth/login',
     pathMatch: 'full',
   },
-  {
-    path: 'check-in/:id',
-    component: StudentCheckInComponent,
-  },
 ];
 
 @NgModule({
